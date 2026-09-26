@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Takrim Attendance</title>
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Hind Siliguri', Arial, sans-serif; background: #0a1f44; min-height: 100vh; color: #333; }
+.banner { text-align: center; padding: 20px 10px; background: linear-gradient(135deg, #0a1f44, #1a3a7a); border: 4px solid #f5c518; border-radius: 20px; margin: 10px; }
+.banner h1 { color: #f5c518; font-size: 26px; letter-spacing: 2px; }
+.banner p { color: #fff; font-size: 13px; margin-top: 6px; }
+.badge { display: inline-block; background: #000; color: #f5c518; padding: 6px 18px; border-radius: 20px; font-size: 12px; margin-top: 10px; border: 1px solid #f5c518; }
+.menu { padding: 10px; display: flex; flex-direction: column; gap: 12px; }
+.menu button { background: #fff; border: 3px solid #f5c518; border-radius: 15px; padding: 16px; font-size: 18px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px; text-align: left; }
+.menu button:hover { background: #fff8e1; }
+.panel { background: #fff; margin: 10px; border-radius: 15px; padding: 15px; display: none; }
+.panel.active { display: block; }
+ input, select { width: 100%; padding: 12px; margin: 6px 0; border-radius: 10px; border: 1px solid #ccc; font-size: 16px; }
+.btn { background: #1a73e8; color: #fff; border: none; border-radius: 10px; padding: 12px; font-size: 16px; cursor: pointer; width: 100%; margin-top: 8px; }
+.btn.green { background: #28a745; }
+.btn.red { background: #dc3545; }
+.row { display: flex; justify-content: space-between; align-items: center; background: #f8f9fa; padding: 10px; margin: 6px 0; border-radius: 10px; }
+.row.present { background: #d4edda; }
+.row.absent { background: #f8d7da; }
+.row.acts { display: flex; gap: 6px; }
+.row.acts button { width: 44px; padding: 8px; font-size: 16px; border-radius: 8px; border: none; cursor: pointer; }
+.p { background: #28a745; color: #fff; }
+.a { background: #dc3545; color: #fff; }
+.back { background: #6c757d; color: #fff; border: none; border-radius: 10px; padding: 10px; width: 100%; margin-top: 8px; font-size: 15px; }
+ h2 { color: #0a1f44; margin-bottom: 10px; text-align: center; }
+.date { text-align: center; color: #666; margin-bottom: 10px; }
+</style>
+</head>
+<body>
+
+<div class="banner">
+  <h1>⭐ TAKRIM ATTENDANCE ⭐</h1>
+  <p>স্কুল • কলেজ • মাদ্রাসা • কোচিং</p>
+  <div class="badge">Engineered by Takrim-ai</div>
+</div>
+
+<div class="menu" id="mainMenu">
+  <button onclick="show('addInst')">➕ নতুন প্রতিষ্ঠান যোগ করুন</button>
+  <button onclick="show('takeAtt')">🎓 শ্রেণী সিলেক্ট করে হাজিরা</button>
+  <button onclick="show('login')">🔑 প্রতিষ্ঠান লগইন</button>
+  <button onclick="show('list')">🏫 প্রতিষ্ঠানের তালিকা দেখুন</button>
+</div>
+
+<!-- নতুন প্রতিষ্ঠান -->
+<div class="panel" id="addInst">
+  <h2>➕ নতুন প্রতিষ্ঠান</h2>
+  <input id="instName" placeholder="প্রতিষ্ঠানের নাম">
+  <input id="instPass" type="password" placeholder="পাসওয়ার্ড দিন">
+  <input id="instClass" placeholder="শ্রেণী (যেমন: ৬ষ্ঠ, ৭ম — কমা দিয়ে আলাদা)">
+  <button class="btn" onclick="addInst()">সংরক্ষণ করুন</button>
+  <button class="back" onclick="home()">⬅️ ফিরে যান</button>
+</div>
+
+<!-- হাজিরা -->
+<div class="panel" id="takeAtt">
+  <h2>🎓 হাজিরা নিন</h2>
+  <select id="attInst" onchange="loadClasses()"><option>প্রতিষ্ঠান সিলেক্ট করুন</option></select>
+  <select id="attClass"><option>শ্রেণী সিলেক্ট করুন</option></select>
+  <input id="stuName" placeholder="ছাত্র/ছাত্রীর নাম">
+  <button class="btn" onclick="addStudent()">➕ ছাত্র যোগ করুন</button>
+  <div class="date" id="attDate"></div>
+  <div id="stuList"></div>
+  <button class="btn green" onclick="exportCSV()">⬇️ রিপোর্ট ডাউনলোড</button>
+  <button class="back" onclick="home()">⬅️ ফিরে যান</button>
+</div>
+
+<!-- লগইন -->
+<div class="panel" id="login">
+  <h2>🔑 প্রতিষ্ঠান লগইন</h2>
+  <select id="loginInst"><option>প্রতিষ্ঠান সিলেক্ট করুন</option></select>
+  <input id="loginPass" type="password" placeholder="পাসওয়ার্ড">
+  <button class="btn" onclick="doLogin()">লগইন</button>
+  <button class="back" onclick="home()">⬅️ ফিরে যান</button>
+</div>
+
+<!-- তালিকা -->
+<div class="panel" id="list">
+  <h2>🏫 প্রতিষ্ঠানের তালিকা</h2>
+  <div id="instList"></div>
+  <button class="back" onclick="home()">⬅️ ফিরে যান</button>
+</div>
+
+<script>
+let DB = JSON.parse(localStorage.getItem('takrim_att_db') || '{"inst":[]}');
+function saveDB(){ localStorage.setItem('takrim_att_db', JSON.stringify(DB)); }
+
+function home(){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('mainMenu').style.display='flex';
+}
+function show(id){
+  document.getElementById('mainMenu').style.display='none';
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(id==='list') renderInst();
+  if(id==='takeAtt'||id==='login') fillInstSelects();
+  if(id==='takeAtt') document.getElementById('attDate').innerText='তারিখ: '+new Date().toLocaleDateString('bn-BD');
+}
+
+function addInst(){
+  const n=document.getElementById('instName').value.trim(),
+        p=document.getElementById('instPass').value.trim(),
+        c=document.getElementById('instClass').value.split(',').map(s=>s.trim()).filter(Boolean);
+  if(!n||!p) return alert('নাম ও পাসওয়ার্ড দিন!');
+  DB.inst.push({name:n,pass:p,classes:c.length?c:['সাধারণ'],students:{}});
+  saveDB(); alert('✅ প্রতিষ্ঠান যোগ হয়েছে!');
+  document.getElementById('instName').value='';document.getElementById('instPass').value='';document.getElementById('instClass').value='';
+  home();
+}
+
+function fillInstSelects(){
+  const opts=DB.inst.map((x,i)=>`<option value="${i}">${x.name}</option>`).join('');
+  document.getElementById('attInst').innerHTML='<option value="">প্রতিষ্ঠান সিলেক্ট করুন</option>'+opts;
+  document.getElementById('loginInst').innerHTML='<option value="">প্রতিষ্ঠান সিলেক্ট করুন</option>'+opts;
+}
+function loadClasses(){
+  const i=document.getElementById('attInst').value;
+  const sel=document.getElementById('attClass');
+  if(i===''){sel.innerHTML='<option>শ্রেণী সিলেক্ট করুন</option>';return;}
+  sel.innerHTML=DB.inst[i].classes.map(c=>`<option>${c}</option>`).join('');
+  renderStudents();
+}
+document.getElementById('attClass').addEventListener('change',renderStudents);
+
+function curKey(){
+  const i=document.getElementById('attInst').value, c=document.getElementById('attClass').value;
+  return i===''||!c?null:{i:+i,c};
+}
+function addStudent(){
+  const k=curKey(); if(!k) return alert('প্রতিষ্ঠান ও শ্রেণী সিলেক্ট করুন!');
+  const n=document.getElementById('stuName').value.trim(); if(!n) return alert('নাম লিখুন!');
+  const st=DB.inst[k.i].students; st[k.c]=st[k.c]||[];
+  st[k.c].push({name:n,status:''}); saveDB();
+  document.getElementById('stuName').value=''; renderStudents();
+}
+function mark(si,s){ const k=curKey(); DB.inst[k.i].students[k.c][si].status=s; saveDB(); renderStudents(); }
+function renderStudents(){
+  const k=curKey(), box=document.getElementById('stuList'); box.innerHTML='';
+  if(!k) return;
+  (DB.inst[k.i].students[k.c]||[]).forEach((s,si)=>{
+    const d=document.createElement('div');
+    d.className='row '+(s.status==='P'?'present':s.status==='A'?'absent':'');
+    d.innerHTML=`<b>${s.name}</b><div class="acts">
+      <button class="p" onclick="mark(${si},'P')">✔</button>
+      <button class="a" onclick="mark(${si},'A')">✖</button></div>`;
+    box.appendChild(d);
+  });
+}
+function renderInst(){
+  const box=document.getElementById('instList'); box.innerHTML='';
+  DB.inst.forEach(x=>{
+    const d=document.createElement('div'); d.className='row';
+    d.innerHTML=`<b>🏫 ${x.name}</b><span>${x.classes.join(', ')}</span>`;
+    box.appendChild(d);
+  });
+  if(!DB.inst.length) box.innerHTML='<p style="text-align:center">কোনো প্রতিষ্ঠান নেই</p>';
+}
+function doLogin(){
+  const i=document.getElementById('loginInst').value, p=document.getElementById('loginPass').value;
+  if(i===''||DB.inst[i].pass!==p) return alert('❌ ভুল পাসওয়ার্ড!');
+  alert('✅ স্বাগতম, '+DB.inst[i].name); show('takeAtt');
+  document.getElementById('attInst').value=i; loadClasses();
+}
+function exportCSV(){
+  const k=curKey(); if(!k) return alert('প্রতিষ্ঠান ও শ্রেণী সিলেক্ট করুন!');
+  const arr=DB.inst[k.i].students[k.c]||[];
+  let csv='নাম,অবস্থা\n';
+  arr.forEach(s=>csv+=`${s.name},${s.status==='P'?'উপস্থিত':s.status==='A'?'অনুপস্থিত':'বাকি'}\n`);
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='hazira.csv'; a.click();
+}
+</script>
+</body>
+</html>
