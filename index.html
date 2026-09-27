@@ -65,20 +65,23 @@ input,select{width:100%;padding:12px;border:2px solid #ddd;border-radius:12px;fo
 <button class="btn btn-blue" onclick="saveNewInst()">সেভ করুন ✔️</button>
 </div></div>
 
-<!-- ২য় পেজ — শুধু প্যাড + অটো শ্রেণী -->
+<!-- ২য় পেজ — শুধু প্যাড + শ্রেণী সিলেক্ট -->
 <div id="classScr" style="display:none">
 <div class="topbar"><button onclick="go('home')">⬅ ফিরুন</button><h2 style="color:#fff;margin:0">🎓 শ্রেণী</h2><span></span></div>
 <div class="card" id="instPad"></div>
+<div class="card">
+<label>🎓 শ্রেণী</label>
+<select id="l_cls"></select>
+</div>
 </div>
 
-<!-- লগইন -->
+<!-- লগইন (শ্রেণী সিলেক্ট বাদ) -->
 <div id="loginScr" style="display:none">
 <div class="topbar"><button onclick="go('home')">⬅ ফিরুন</button><span></span><span></span></div>
 <div class="card" style="text-align:center;border:3px solid #FFD54F">
 <div style="font-size:50px">🔐</div><h2>প্রতিষ্ঠান লগইন</h2>
 <label style="text-align:left">🏫 প্রতিষ্ঠান কোড</label><input id="l_code" placeholder="যেমন: 50018">
 <label style="text-align:left">🔑 পাসওয়ার্ড</label><input id="l_pass" type="password" placeholder="পাসওয়ার্ড দিন">
-<label style="text-align:left">🎓 শ্রেণী</label><select id="l_cls"></select>
 <button class="btn" onclick="teacherLogin()">প্রবেশ করুন ➜</button>
 <p id="l_msg" style="color:red;font-size:14px;margin-top:8px"></p>
 </div></div>
@@ -120,22 +123,24 @@ if(npCd.value.trim()&&npPass.value){users[npCd.value.trim()]=npPass.value;localS
 npBn.value='';npEn.value='';npEi.value='';npCd.value='';npPass.value='';npLogoData='';npLogo.src='data:image/gif;base64,[STRIPPED]';
 alert('✔️ প্রতিষ্ঠান যোগ হয়েছে');go('home');}
 function openClassScr(){if(cur<0){if(!insts.length){alert('আগে নতুন প্রতিষ্ঠান যোগ করুন');go('newInstScr');return;}cur=0;}
+curCls='';l_cls.value='';
 buildInstPad();go('classScr');}
 function buildInstPad(){const s=insts[cur];if(!s)return;
 instPad.innerHTML='<div style="display:flex;align-items:center;gap:12px;text-align:left">'+(s.logo?'<img src="'+s.logo+'" style="width:60px;height:60px;border-radius:50%;border:3px solid #FFD54F;object-fit:cover">':'<div style="font-size:42px">🏫</div>')+'<div><b style="font-size:18px;color:#1a3a6b">'+s.name+'</b><br><small>EIIN: '+(s.eiin||'-')+' | Code: '+(s.code||'-')+'</small></div></div>'+(curCls?'<p style="margin:12px 0 0;font-weight:700;font-size:17px;color:#1a3a6b;text-align:center;border-top:2px solid #FFD54F;padding-top:10px">🎓 শ্রেণী: '+curCls+'</p>':'');}
-function goAttendance(){if(!curCls){alert('শ্রেণী সিলেক্ট করুন');return;}
+function goAttendance(){const cl=l_cls.value;
+if(!cl){alert('শ্রেণী সিলেক্ট করুন');return;}
+curCls=cl;
 students=JSON.parse(localStorage.getItem('takrim_stu_'+cur+'_'+curCls)||'[]');att={};
 buildPad();go('attScr');
 showClass.textContent=curCls;
 attDate.value=new Date().toISOString().slice(0,10);renderStu();}
-function teacherLogin(){const c=l_code.value.trim(),p=l_pass.value,cl=l_cls.value;
+function teacherLogin(){const c=l_code.value.trim(),p=l_pass.value;
 if(!c||!p){l_msg.textContent='কোড ও পাসওয়ার্ড দিন';return;}
-if(!cl){l_msg.textContent='শ্রেণী সিলেক্ট করুন';return;}
 const i=insts.findIndex(s=>((s.code||'').trim()===c));
 let ok=(users[c]&&users[c]===p);
 if(!ok&&i>=0&&(insts[i].pass||'')===p)ok=true;
-if(ok){cur=i>=0?i:0;curCls=cl;
-l_msg.textContent='';l_code.value='';l_pass.value='';l_cls.value='';openClassScr();}
+if(ok){cur=i>=0?i:0;
+l_msg.textContent='';l_code.value='';l_pass.value='';openClassScr();}
 else{l_msg.textContent='❌ ভুল কোড বা পাসওয়ার্ড!';}}
 function adminGate(){
 let ap=localStorage.getItem('takrim_admin_pass');
