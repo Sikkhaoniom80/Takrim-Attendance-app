@@ -42,16 +42,18 @@ input,select{width:100%;padding:12px;border:2px solid #ddd;border-radius:12px;fo
 <button class="menu-btn" onclick="openListScr()">🏫 প্রতিষ্ঠানের তালিকা দেখুন</button>
 </div>
 
-<!-- ১: নতুন প্রতিষ্ঠান -->
+<!-- নতুন প্রতিষ্ঠান -->
 <div id="newInstScr" style="display:none">
 <div class="topbar"><button onclick="go('home')">⬅ ফিরুন</button><h2 style="color:#fff;margin:0">➕ নতুন প্রতিষ্ঠান</h2><span></span></div>
 <div class="card">
 <div style="border:2px solid #FFD54F;border-radius:22px;padding:18px;margin-bottom:12px">
 <div style="display:flex;gap:14px;align-items:center">
 <div style="text-align:center;min-width:90px">
-<img id="npLogo" src="" style="width:80px;height:80px;border-radius:50%;border:5px solid #FFD54F;object-fit:cover;background:#f5f5f5;display:block;margin:0 auto">
-<button onclick="document.getElementById('npLogoInp').click()" style="background:none;border:none;color:#1a3aed;font-weight:bold;margin-top:6px;cursor:pointer;font-size:14px">লোগো চেঞ্জ</button>
-<input type="file" id="npLogoInp" accept="image/*" style="display:none" onchange="npLogoChg(this)">
+<label for="npLogoInp" style="cursor:pointer;display:block">
+<img id="npLogo" src="data:image/gif;base64,[STRIPPED]" style="width:80px;height:80px;border-radius:50%;border:5px solid #FFD54F;object-fit:cover;background:#f5f5f5;display:block;margin:0 auto">
+<div style="color:#1a3aed;font-weight:bold;margin-top:6px;font-size:14px">লোগো চেঞ্জ</div>
+</label>
+<input type="file" id="npLogoInp" accept="image/*" onchange="npLogoChg(this)" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
 </div>
 <div style="flex:1">
 <input id="npBn" placeholder="বাংলা নাম" style="text-align:center;font-weight:bold">
@@ -61,18 +63,16 @@ input,select{width:100%;padding:12px;border:2px solid #ddd;border-radius:12px;fo
 <input id="npCd" placeholder="Code" style="text-align:center;margin:0">
 </div></div></div></div>
 <label>🔑 পাসওয়ার্ড</label><input id="npPass" type="password" placeholder="পাসওয়ার্ড দিন">
-<label>🏫 শ্রেণী</label>
-<select id="npCls"><option>১ম শ্রেণী</option><option>২য় শ্রেণী</option><option>৩য় শ্রেণী</option><option>৪র্থ শ্রেণী</option><option>৫ম শ্রেণী</option><option>৬ষ্ঠ শ্রেণী</option><option>৭ম শ্রেণী</option><option>৮ম শ্রেণী</option><option>৯ম শ্রেণী</option><option>১০ম শ্রেণী</option><option>একাদশ শ্রেণী</option><option>দ্বাদশ শ্রেণী</option></select>
 <button class="btn btn-blue" onclick="saveNewInst()">সেভ করুন ✔️</button>
 </div></div>
 
-<!-- ২: শ্রেণী সিলেক্ট -->
+<!-- শ্রেণী সিলেক্ট -->
 <div id="classScr" style="display:none">
 <div class="topbar"><button onclick="go('home')">⬅ ফিরুন</button><h2 style="color:#fff;margin:0">🎓 শ্রেণী সিলেক্ট করুন</h2><span></span></div>
 <div class="card" id="classGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"></div>
 </div>
 
-<!-- ৩: লগইন -->
+<!-- লগইন -->
 <div id="loginScr" style="display:none">
 <div class="topbar"><button onclick="go('home')">⬅ ফিরুন</button><span></span><span></span></div>
 <div class="card" style="text-align:center;border:3px solid #FFD54F">
@@ -83,7 +83,7 @@ input,select{width:100%;padding:12px;border:2px solid #ddd;border-radius:12px;fo
 <p id="l_msg" style="color:red;font-size:14px;margin-top:8px"></p>
 </div></div>
 
-<!-- ৪: তালিকা -->
+<!-- তালিকা -->
 <div id="listScr" style="display:none">
 <div class="topbar"><button onclick="go('home')">⬅ ফিরুন</button><h2 style="color:#fff;margin:0">🏫 তালিকা</h2><span></span></div>
 <div class="card"><div id="instList"></div></div>
@@ -109,17 +109,17 @@ let insts=JSON.parse(localStorage.getItem('takrim_insts')||'[]');
 let cur=-1, students=[], att={}, curCls='';
 const CLASSES=['১ম শ্রেণী','২য় শ্রেণী','৩য় শ্রেণী','৪র্থ শ্রেণী','৫ম শ্রেণী','৬ষ্ঠ শ্রেণী','৭ম শ্রেণী','৮ম শ্রেণী','৯ম শ্রেণী','১০ম শ্রেণী','একাদশ শ্রেণী','দ্বাদশ শ্রেণী'];
 function go(id){['home','newInstScr','classScr','loginScr','listScr','attScr'].forEach(s=>document.getElementById(s).style.display='none');document.getElementById(id).style.display='block';}
-/* --- ১: নতুন প্রতিষ্ঠান --- */
+/* নতুন প্রতিষ্ঠান */
 let npLogoData='';
 function npLogoChg(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();
 r.onload=()=>{npLogoData=r.result;document.getElementById('npLogo').src=r.result;};r.readAsDataURL(f);}
 function saveNewInst(){const bn=npBn.value.trim();if(!bn){alert('প্রতিষ্ঠানের নাম দিন');return;}
-insts.push({name:bn,en:npEn.value.trim(),eiin:npEi.value.trim(),code:npCd.value.trim(),logo:npLogoData,pass:npPass.value,cls:npCls.value});
+insts.push({name:bn,en:npEn.value.trim(),eiin:npEi.value.trim(),code:npCd.value.trim(),logo:npLogoData,pass:npPass.value,cls:''});
 localStorage.setItem('takrim_insts',JSON.stringify(insts));
 if(npCd.value.trim()&&npPass.value){users[npCd.value.trim()]=npPass.value;localStorage.setItem('takrim_users',JSON.stringify(users));}
-npBn.value='';npEn.value='';npEi.value='';npCd.value='';npPass.value='';npLogoData='';npLogo.src='';
+npBn.value='';npEn.value='';npEi.value='';npCd.value='';npPass.value='';npLogoData='';npLogo.src='data:image/gif;base64,[STRIPPED]';
 alert('✔️ প্রতিষ্ঠান যোগ হয়েছে');go('home');}
-/* --- ২: শ্রেণী --- */
+/* শ্রেণী */
 function openClassScr(){if(!insts.length){alert('আগে নতুন প্রতিষ্ঠান যোগ করুন');go('newInstScr');return;}
 cur=0;go('classScr');
 classGrid.innerHTML=CLASSES.map(c=>'<button class="btn" style="margin:0" onclick="enterClass(\''+c+'\')">🎓 '+c+'</button>').join('');}
@@ -128,22 +128,22 @@ students=JSON.parse(localStorage.getItem('takrim_stu_'+cur+'_'+c)||'[]');att={};
 buildPad();go('attScr');
 showClass.textContent=c;
 attDate.value=new Date().toISOString().slice(0,10);renderStu();}
-/* --- ৩: লগইন --- */
+/* লগইন */
 function teacherLogin(){const c=l_code.value.trim(),p=l_pass.value;
 if(!c||!p){l_msg.textContent='কোড ও পাসওয়ার্ড দিন';return;}
 if(users[c]&&users[c]===p){go('home');l_msg.textContent='';alert('✔️ লগইন সফল!');}
 else{l_msg.textContent='❌ ভুল কোড বা পাসওয়ার্ড!';}}
-/* --- ৪: তালিকা --- */
+/* তালিকা */
 function openListScr(){go('listScr');
 instList.innerHTML=insts.length?insts.map((s,i)=>'<div class="card" style="display:flex;align-items:center;gap:10px;padding:10px">'+(s.logo?'<img src="'+s.logo+'" style="width:45px;height:45px;border-radius:50%;object-fit:cover">':'🏫')+'<div style="flex:1"><b>'+s.name+'</b><br><small>EIIN: '+(s.eiin||'-')+' | Code: '+(s.code||'-')+'</small></div><button class="btn" style="width:auto;padding:8px 14px;margin:0" onclick="openInstAtt('+i+')">হাজিরা ➜</button></div>').join(''):'<p style="text-align:center;color:#888">এখনো কোনো প্রতিষ্ঠান নেই</p>';}
 function openInstAtt(i){cur=i;openClassScr();}
-/* --- হাজিরা প্যাড --- */
+/* হাজিরা প্যাড */
 function buildPad(){const s=insts[cur];
 attPad.innerHTML='<div style="display:flex;gap:12px;align-items:center">'
-+'<div onclick="document.getElementById(\'boxLogoInput\').click()" style="cursor:pointer;text-align:center;min-width:70px">'
-+'<img id="boxLogo" src="'+(s.logo||'https://via.placeholder.com/65')+'" style="width:65px;height:65px;border-radius:50%;border:3px solid #FFD54F;object-fit:cover">'
-+'<div style="font-size:11px;color:blue;font-weight:bold">লোগো চেঞ্জ</div>'
-+'<input type="file" id="boxLogoInput" accept="image/*" style="display:none" onchange="changeBoxLogo(this)"></div>'
++'<label for="boxLogoInput" style="cursor:pointer;text-align:center;min-width:70px;display:block">'
++'<img id="boxLogo" src="'+(s.logo||'data:image/gif;base64,[STRIPPED]')+'" style="width:65px;height:65px;border-radius:50%;border:3px solid #FFD54F;object-fit:cover;background:#f5f5f5">'
++'<div style="font-size:11px;color:blue;font-weight:bold">লোগো চেঞ্জ</div></label>'
++'<input type="file" id="boxLogoInput" accept="image/*" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" onchange="changeBoxLogo(this)">'
 +'<div style="flex:1;overflow:hidden;text-align:center">'
 +'<div id="boxNameBn" contenteditable="true" onblur="saveBox()" style="font-weight:bold;color:#1a3a6b;font-size:17px">'+s.name+'</div>'
 +'<div id="boxNameEn" contenteditable="true" onblur="saveBox()" style="color:#d32f2f;font-weight:bold;font-size:13px">'+(s.en||'')+'</div>'
@@ -160,7 +160,7 @@ function saveBox(){insts[cur].name=boxNameBn.textContent.trim();insts[cur].en=bo
 insts[cur].eiin=boxEIIN.textContent.trim();insts[cur].code=boxIns.textContent.trim();
 localStorage.setItem('takrim_insts',JSON.stringify(insts));
 boxStatus.textContent='✔️ সেভ হয়েছে';setTimeout(()=>boxStatus.textContent='',2000);}
-/* --- ছাত্র ও হাজিরা --- */
+/* ছাত্র ও হাজিরা */
 function addStudent(){const n=stuName.value.trim();if(!n)return;
 students.push(n);localStorage.setItem('takrim_stu_'+cur+'_'+curCls,JSON.stringify(students));stuName.value='';renderStu();}
 function renderStu(){stuList.innerHTML=students.map((n,i)=>'<div class="stu"><span class="nm">'+(i+1)+'. '+n+'</span><button class="pa '+(att[n]=='A'?'p-off':'p-on')+'" onclick="mark(\''+n+'\',\'P\')">✔️</button><button class="pa '+(att[n]=='A'?'a-on':'a-off')+'" onclick="mark(\''+n+'\',\'A\')">✖️</button></div>').join('')||'<p style="color:#888">ছাত্র যোগ করুন</p>';}
