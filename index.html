@@ -29,7 +29,7 @@ input,select{width:100%;padding:12px;border:2px solid #ddd;border-radius:12px;fo
 </head>
 <body>
 
-<!-- হোম — ৩টা বাটন -->
+<!-- হোম -->
 <div id="home">
 <div class="title-card">
 <h1>⭐ TAKRIM<br>ATTENDANCE ⭐</h1>
@@ -52,7 +52,7 @@ input,select{width:100%;padding:12px;border:2px solid #ddd;border-radius:12px;fo
 <img id="npLogo" src="data:image/gif;base64,[STRIPPED]" style="width:80px;height:80px;border-radius:50%;border:5px solid #FFD54F;object-fit:cover;background:#f5f5f5;display:block;margin:0 auto">
 <div style="color:#1a3aed;font-weight:bold;margin-top:6px;font-size:14px">লোগো চেঞ্জ</div>
 </label>
-<input type="file" id="npLogoInp" accept="image/*" onchange="npLogoChg(this)" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+<input type="file" id="npLogoInp" accept="image/*" onchange="npLogoChg(this)" style="position:absolute;left:-9999px;width:1px;height:opacity:0">
 </div>
 <div style="flex:1">
 <input id="npBn" placeholder="বাংলা নাম" style="text-align:center;font-weight:bold">
@@ -65,14 +65,14 @@ input,select{width:100%;padding:12px;border:2px solid #ddd;border-radius:12px;fo
 <button class="btn btn-blue" onclick="saveNewInst()">সেভ করুন ✔️</button>
 </div></div>
 
-<!-- ২য় পেজ — প্রতিষ্ঠানের প্যাড + শ্রেণী সিলেক্ট -->
+<!-- শ্রেণী সিলেক্ট -->
 <div id="classScr" style="display:none">
 <div class="topbar"><button onclick="go('home')">⬅ ফিরুন</button><h2 style="color:#fff;margin:0">🎓 শ্রেণী সিলেক্ট করুন</h2><span></span></div>
 <div class="card" id="instPad"></div>
 <div class="card" id="classGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"></div>
 </div>
 
-<!-- লগইন — কোড + পাসওয়ার্ড + শ্রেণী -->
+<!-- লগইন -->
 <div id="loginScr" style="display:none">
 <div class="topbar"><button onclick="go('home')">⬅ ফিরুন</button><span></span><span></span></div>
 <div class="card" style="text-align:center;border:3px solid #FFD54F">
@@ -84,7 +84,7 @@ input,select{width:100%;padding:12px;border:2px solid #ddd;border-radius:12px;fo
 <p id="l_msg" style="color:red;font-size:14px;margin-top:8px"></p>
 </div></div>
 
-<!-- তালিকা (এডমিন গেটেড) -->
+<!-- তালিকা -->
 <div id="listScr" style="display:none">
 <div class="topbar"><button onclick="go('home')">⬅ ফিরুন</button><h2 style="color:#fff;margin:0">🏫 তালিকা</h2><span></span></div>
 <div class="card"><div id="instList"></div></div>
@@ -108,7 +108,7 @@ input,select{width:100%;padding:12px;border:2px solid #ddd;border-radius:12px;fo
 let users=JSON.parse(localStorage.getItem('takrim_users')||'{}');
 let insts=JSON.parse(localStorage.getItem('takrim_insts')||'[]');
 let cur=-1, students=[], att={}, curCls='';
-const CLASSES=['১ম শ্রেণী','২য় শ্রেণী','৩য় শ্রেণী','৪র্থ শ্রেণী','৫ম শ্রেণী','৬ষ্ঠ শ্রেণী','৭ম শ্রেণী','৮ম শ্রেণী','৯ম শ্রেণী','১০ম শ্রেণী','একাদশ শ্রেণী','দ্বাদশ শ্রেণী'];
+const CLASSES=['দ্বাদশ শ্রেণী'];
 l_cls.innerHTML='<option value="">শ্রেণী সিলেক্ট করুন</option>'+CLASSES.map(c=>'<option value="'+c+'">'+c+'</option>').join('');
 function go(id){['home','newInstScr','classScr','loginScr','listScr','attScr'].forEach(s=>document.getElementById(s).style.display='none');document.getElementById(id).style.display='block';}
 let npLogoData='';
