@@ -131,7 +131,10 @@ attDate.value=new Date().toISOString().slice(0,10);renderStu();}
 function teacherLogin(){const c=l_code.value.trim(),p=l_pass.value,cl=l_cls.value;
 if(!c||!p){l_msg.textContent='কোড ও পাসওয়ার্ড দিন';return;}
 if(!cl){l_msg.textContent='শ্রেণী সিলেক্ট করুন';return;}
-if(users[c]&&users[c]===p){const i=insts.findIndex(s=>s.code===c);cur=i>=0?i:0;curCls=cl;
+const i=insts.findIndex(s=>((s.code||'').trim()===c));
+let ok=(users[c]&&users[c]===p);
+if(!ok&&i>=0&&(insts[i].pass||'')===p)ok=true;
+if(ok){cur=i>=0?i:0;curCls=cl;
 l_msg.textContent='';l_code.value='';l_pass.value='';l_cls.value='';openClassScr();}
 else{l_msg.textContent='❌ ভুল কোড বা পাসওয়ার্ড!';}}
 function adminGate(){
@@ -148,7 +151,10 @@ const seen={},uniq=[];
 insts.forEach((s,i)=>{const key=(s.eiin&&s.eiin.trim()?s.eiin.trim():'')||(s.name||'').trim().toLowerCase();
 if(!seen[key]){seen[key]=1;uniq.push(i);}});
 instList.innerHTML=uniq.length?uniq.map(i=>{const s=insts[i];
-return '<div class="card" style="display:flex;align-items:center;gap:10px;padding:10px">'+(s.logo?'<img src="'+s.logo+'" style="width:45px;height:45px;border-radius:50%;object-fit:cover">':'🏫')+'<div style="flex:1"><b>'+s.name+'</b><br><small>EIIN: '+(s.eiin||'-')+' | Code: '+(s.code||'-')+'</small></div><button class="pa a-on" style="font-size:18px" onclick="delInst('+i+')">🗑️</button></div>';}).join(''):'<p style="text-align:center;color:#888">এখনো কোনো প্রতিষ্ঠান নেই</p>';}
+return '<div class="card" style="display:flex;align-items:center;gap:10px;padding:10px">'+(s.logo?'<img src="'+s.logo+'" style="width:45px;height:45px;border-radius:50%;object-fit:cover">':'🏫')+'<div style="flex:1"><b>'+s.name+'</b><br><small>EIIN: '+(s.eiin||'-')+' | Code: '+(s.code||'-')+'<br>🔑 পাসওয়ার্ড: <span id="pw_'+i+'" style="font-weight:bold;color:#1a3a6b">'+(s.pass||'-')+'</span> <button class="pa" style="padding:2px 8px;font-size:14px" onclick="togglePw('+i+')">👁️</button></small></div><button class="pa a-on" style="font-size:18px" onclick="delInst('+i+')">🗑️</button></div>';}).join(''):'<p style="text-align:center;color:#888">এখনো কোনো প্রতিষ্ঠান নেই</p>';}
+function togglePw(i){const el=document.getElementById('pw_'+i);
+if(el.dataset.hide==='1'){el.textContent=insts[i].pass||'-';el.dataset.hide='';}
+else{el.dataset.hide='1';el.textContent='••••••';}}
 function delInst(idx){
 if(!confirm('এই প্রতিষ্ঠান ডিলিট করবেন?'))return;
 const s=insts[idx];
