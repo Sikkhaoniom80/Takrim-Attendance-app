@@ -29,7 +29,7 @@ input,select{width:100%;padding:12px;border:2px solid #ddd;border-radius:12px;fo
 </head>
 <body>
 
-<!-- হোম -->
+<!-- হোম (শ্রেণী সিলেক্ট বাটন বাদ — শুধু ৩টা) -->
 <div id="home">
 <div class="title-card">
 <h1>⭐ TAKRIM<br>ATTENDANCE ⭐</h1>
@@ -37,7 +37,6 @@ input,select{width:100%;padding:12px;border:2px solid #ddd;border-radius:12px;fo
 <span class="pill">Engineered by Takrim-ai</span>
 </div>
 <button class="menu-btn" onclick="go('newInstScr')">➕ নতুন প্রতিষ্ঠান যোগ করুন</button>
-<button class="menu-btn" onclick="openClassScr()">🎓 শ্রেণী সিলেক্ট করে হাজিরা</button>
 <button class="menu-btn" onclick="go('loginScr')">🔑 প্রতিষ্ঠান লগইন</button>
 <button class="menu-btn" onclick="openListScr()">🏫 প্রতিষ্ঠানের তালিকা দেখুন</button>
 </div>
@@ -66,7 +65,7 @@ input,select{width:100%;padding:12px;border:2px solid #ddd;border-radius:12px;fo
 <button class="btn btn-blue" onclick="saveNewInst()">সেভ করুন ✔️</button>
 </div></div>
 
-<!-- শ্রেণী সিলেক্ট (ছবির মতোই — শুধু শ্রেণীর ঘর) -->
+<!-- শ্রেণী সিলেক্ট (শুধু শ্রেণীর ঘর) -->
 <div id="classScr" style="display:none">
 <div class="topbar"><button onclick="go('home')">⬅ ফিরুন</button><h2 style="color:#fff;margin:0">🎓 শ্রেণী সিলেক্ট করুন</h2><span></span></div>
 <div class="card" id="classGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"></div>
