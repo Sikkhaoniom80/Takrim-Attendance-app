@@ -38,7 +38,7 @@ input,select{width:100%;padding:12px;border:2px solid #ddd;border-radius:12px;fo
 </div>
 <button class="menu-btn" onclick="go('newInstScr')">➕ নতুন প্রতিষ্ঠান যোগ করুন</button>
 <button class="menu-btn" onclick="go('loginScr')">🔑 প্রতিষ্ঠান লগইন</button>
-<button class="menu-btn" onclick="openListScr()">🏫 প্রতিষ্ঠানের তালিকা দেখুন</button>
+<button class="menu-btn" onclick="adminGate()">🏫 প্রতিষ্ঠানের তালিকা দেখুন</button>
 </div>
 
 <!-- নতুন প্রতিষ্ঠান -->
@@ -84,7 +84,7 @@ input,select{width:100%;padding:12px;border:2px solid #ddd;border-radius:12px;fo
 <p id="l_msg" style="color:red;font-size:14px;margin-top:8px"></p>
 </div></div>
 
-<!-- তালিকা -->
+<!-- তালিকা (এডমিন গেটেড) -->
 <div id="listScr" style="display:none">
 <div class="topbar"><button onclick="go('home')">⬅ ফিরুন</button><h2 style="color:#fff;margin:0">🏫 তালিকা</h2><span></span></div>
 <div class="card"><div id="instList"></div></div>
@@ -136,8 +136,32 @@ if(!cl){l_msg.textContent='শ্রেণী সিলেক্ট করুন
 if(users[c]&&users[c]===p){const i=insts.findIndex(s=>s.code===c);cur=i>=0?i:0;curCls=cl;
 l_msg.textContent='';l_code.value='';l_pass.value='';l_cls.value='';openClassScr();}
 else{l_msg.textContent='❌ ভুল কোড বা পাসওয়ার্ড!';}}
+function adminGate(){
+let ap=localStorage.getItem('takrim_admin_pass');
+if(!ap){const np=prompt('প্রথমবার: এডমিন পাসওয়ার্ড সেট করুন\n(এডমিন আইডি: takrim)');
+if(!np)return;localStorage.setItem('takrim_admin_pass',np);alert('✔️ এডমিন পাসওয়ার্ড সেট হয়েছে');openListScr();return;}
+const id=prompt('🔐 এডমিন আইডি দিন');
+if(id!=='takrim'){alert('❌ অনুমতি নেই!');return;}
+const pw=prompt('🔐 এডমিন পাসওয়ার্ড দিন');
+if(pw!==ap){alert('❌ ভুল পাসওয়ার্ড!');return;}
+openListScr();}
 function openListScr(){go('listScr');
-instList.innerHTML=insts.length?insts.map((s,i)=>'<div class="card" style="display:flex;align-items:center;gap:10px;padding:10px">'+(s.logo?'<img src="'+s.logo+'" style="width:45px;height:45px;border-radius:50%;object-fit:cover">':'🏫')+'<div style="flex:1"><b>'+s.name+'</b><br><small>EIIN: '+(s.eiin||'-')+' | Code: '+(s.code||'-')+'</small></div></div>').join(''):'<p style="text-align:center;color:#888">এখনো কোনো প্রতিষ্ঠান নেই</p>';}
+const seen={},uniq=[];
+insts.forEach((s,i)=>{const key=(s.eiin&&s.eiin.trim()?s.eiin.trim():'')||(s.name||'').trim().toLowerCase();
+if(!seen[key]){seen[key]=1;uniq.push(i);}});
+instList.innerHTML=uniq.length?uniq.map(i=>{const s=insts[i];
+return '<div class="card" style="display:flex;align-items:center;gap:10px;padding:10px">'+(s.logo?'<img src="'+s.logo+'" style="width:45px;height:45px;border-radius:50%;object-fit:cover">':'🏫')+'<div style="flex:1"><b>'+s.name+'</b><br><small>EIIN: '+(s.eiin||'-')+' | Code: '+(s.code||'-')+'</small></div><button class="pa a-on" style="font-size:18px" onclick="delInst('+i+')">🗑️</button></div>';}).join(''):'<p style="text-align:center;color:#888">এখনো কোনো প্রতিষ্ঠান নেই</p>';}
+function delInst(idx){
+if(!confirm('এই প্রতিষ্ঠান ডিলিট করবেন?'))return;
+const s=insts[idx];
+if(s.code&&users[s.code]){delete users[s.code];localStorage.setItem('takrim_users',JSON.stringify(users));}
+const allKeys=[];for(let i=0;i<localStorage.length;i++)allKeys.push(localStorage.key(i));
+allKeys.forEach(k=>{const m=k.match(/^takrim_(stu|att)_(\d+)_(.+)$/);
+if(m){const oi=+m[2];
+if(oi===idx)localStorage.removeItem(k);
+else if(oi>idx){localStorage.setItem('takrim_'+m[1]+'_'+(oi-1)+'_'+m[3],localStorage.getItem(k));localStorage.removeItem(k);}}});
+insts.splice(idx,1);localStorage.setItem('takrim_insts',JSON.stringify(insts));
+alert('✔️ প্রতিষ্ঠান ডিলিট হয়েছে');openListScr();}
 function buildPad(){const s=insts[cur];
 attPad.innerHTML='<div style="display:flex;align-items:center;gap:12px;text-align:left">'+(s&&s.logo?'<img src="'+s.logo+'" style="width:60px;height:60px;border-radius:50%;border:3px solid #FFD54F;object-fit:cover">':'<div style="font-size:42px">🏫</div>')+'<div><b style="font-size:18px;color:#1a3a6b">'+(s?s.name:'')+'</b><br><small>EIIN: '+((s&&s.eiin)||'-')+' | Code: '+((s&&s.code)||'-')+'</small></div></div>'+'<p style="margin:12px 0 0;font-weight:700;font-size:18px;color:#1a3a6b;text-align:center;border-top:2px solid #FFD54F;padding-top:10px">🎓 শ্রেণী: <span id="showClass"></span></p>';}
 function addStudent(){const n=stuName.value.trim();if(!n)return;
