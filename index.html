@@ -52,7 +52,7 @@ input,select{width:100%;padding:12px;border:2px solid #ddd;border-radius:12px;fo
 <img id="npLogo" src="data:image/gif;base64,[STRIPPED]" style="width:80px;height:80px;border-radius:50%;border:5px solid #FFD54F;object-fit:cover;background:#f5f5f5;display:block;margin:0 auto">
 <div style="color:#1a3aed;font-weight:bold;margin-top:6px;font-size:14px">লোগো চেঞ্জ</div>
 </label>
-<input type="file" id="npLogoInp" accept="image/*" onchange="npLogoChg(this)" style="position:absolute;left:-9999px;width:1px;height:opacity:0">
+<input type="file" id="npLogoInp" accept="image/*" onchange="npLogoChg(this)" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
 </div>
 <div style="flex:1">
 <input id="npBn" placeholder="বাংলা নাম" style="text-align:center;font-weight:bold">
@@ -65,11 +65,10 @@ input,select{width:100%;padding:12px;border:2px solid #ddd;border-radius:12px;fo
 <button class="btn btn-blue" onclick="saveNewInst()">সেভ করুন ✔️</button>
 </div></div>
 
-<!-- শ্রেণী সিলেক্ট -->
+<!-- ২য় পেজ — শুধু প্যাড + অটো শ্রেণী -->
 <div id="classScr" style="display:none">
-<div class="topbar"><button onclick="go('home')">⬅ ফিরুন</button><h2 style="color:#fff;margin:0">🎓 শ্রেণী সিলেক্ট করুন</h2><span></span></div>
+<div class="topbar"><button onclick="go('home')">⬅ ফিরুন</button><h2 style="color:#fff;margin:0">🎓 শ্রেণী</h2><span></span></div>
 <div class="card" id="instPad"></div>
-<div class="card" id="classGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"></div>
 </div>
 
 <!-- লগইন -->
@@ -108,7 +107,7 @@ input,select{width:100%;padding:12px;border:2px solid #ddd;border-radius:12px;fo
 let users=JSON.parse(localStorage.getItem('takrim_users')||'{}');
 let insts=JSON.parse(localStorage.getItem('takrim_insts')||'[]');
 let cur=-1, students=[], att={}, curCls='';
-const CLASSES=['দ্বাদশ শ্রেণী'];
+const CLASSES=['১ম শ্রেণী','২য় শ্রেণী','৩য় শ্রেণী','৪র্থ শ্রেণী','৫ম শ্রেণী','৬ষ্ঠ শ্রেণী','৭ম শ্রেণী','৮ম শ্রেণী','৯ম শ্রেণী','১০ম শ্রেণী','একাদশ শ্রেণী','দ্বাদশ শ্রেণী'];
 l_cls.innerHTML='<option value="">শ্রেণী সিলেক্ট করুন</option>'+CLASSES.map(c=>'<option value="'+c+'">'+c+'</option>').join('');
 function go(id){['home','newInstScr','classScr','loginScr','listScr','attScr'].forEach(s=>document.getElementById(s).style.display='none');document.getElementById(id).style.display='block';}
 let npLogoData='';
@@ -121,14 +120,13 @@ if(npCd.value.trim()&&npPass.value){users[npCd.value.trim()]=npPass.value;localS
 npBn.value='';npEn.value='';npEi.value='';npCd.value='';npPass.value='';npLogoData='';npLogo.src='data:image/gif;base64,[STRIPPED]';
 alert('✔️ প্রতিষ্ঠান যোগ হয়েছে');go('home');}
 function openClassScr(){if(cur<0){if(!insts.length){alert('আগে নতুন প্রতিষ্ঠান যোগ করুন');go('newInstScr');return;}cur=0;}
-buildInstPad();go('classScr');
-classGrid.innerHTML=CLASSES.map(c=>'<button class="btn" style="margin:0" onclick="enterClass(\''+c+'\')">🎓 '+c+'</button>').join('');}
+buildInstPad();go('classScr');}
 function buildInstPad(){const s=insts[cur];if(!s)return;
 instPad.innerHTML='<div style="display:flex;align-items:center;gap:12px;text-align:left">'+(s.logo?'<img src="'+s.logo+'" style="width:60px;height:60px;border-radius:50%;border:3px solid #FFD54F;object-fit:cover">':'<div style="font-size:42px">🏫</div>')+'<div><b style="font-size:18px;color:#1a3a6b">'+s.name+'</b><br><small>EIIN: '+(s.eiin||'-')+' | Code: '+(s.code||'-')+'</small></div></div>'+(curCls?'<p style="margin:12px 0 0;font-weight:700;font-size:17px;color:#1a3a6b;text-align:center;border-top:2px solid #FFD54F;padding-top:10px">🎓 শ্রেণী: '+curCls+'</p>':'');}
-function enterClass(c){curCls=c;
-students=JSON.parse(localStorage.getItem('takrim_stu_'+cur+'_'+c)||'[]');att={};
+function goAttendance(){if(!curCls){alert('শ্রেণী সিলেক্ট করুন');return;}
+students=JSON.parse(localStorage.getItem('takrim_stu_'+cur+'_'+curCls)||'[]');att={};
 buildPad();go('attScr');
-showClass.textContent=c;
+showClass.textContent=curCls;
 attDate.value=new Date().toISOString().slice(0,10);renderStu();}
 function teacherLogin(){const c=l_code.value.trim(),p=l_pass.value,cl=l_cls.value;
 if(!c||!p){l_msg.textContent='কোড ও পাসওয়ার্ড দিন';return;}
