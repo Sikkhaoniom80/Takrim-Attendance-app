@@ -7,7 +7,7 @@
 <style>
 *{box-sizing:border-box;font-family:'Hind Siliguri',sans-serif}
 body{margin:0;background:#0a2342;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:12px}
-.badge{width:100%;max-width:480px;border-radius:18px;border:2px solid #ffd700;margin-top:6px;display:block;box-shadow:0 0 25px rgba(212,175,55,.35)}
+.badge{width:100%;max-width:480px;height:50vh;object-fit:cover;border-radius:18px;border:2px solid #ffd700;margin-top:6px;display:block;box-shadow:0 0 25px rgba(212,175,55,.35)}
 .menu-btn{display:block;width:100%;max-width:380px;background:#fff;border:3px solid #ffd700;border-radius:18px;padding:16px;font-size:19px;font-weight:bold;color:#111;margin-top:14px;cursor:pointer;text-align:center}
 .menu-btn small{display:block;font-size:12px;color:#555;font-weight:normal;margin-top:4px}
 .page{display:none;width:100%;max-width:480px}.page.active{display:flex;flex-direction:column;align-items:center;width:100%}
@@ -116,6 +116,7 @@ let ok=(users[c]&&users[c]===p);if(!ok&&i>=0&&(insts[i].pass||'')===p)ok=true;
 if(!ok){l_msg.textContent='❌ ভুল কোড বা পাসওয়ার্ড!';return;}
 let s=insts[i>=0?i:0]||{};
 localStorage.setItem('collegeInfo',JSON.stringify({nameBn:s.name||'',nameEn:s.en||'',eiin:s.eiin||'',ins:s.code||'',logo:s.logo||''}));
+localStorage.setItem('takrim_inst_code',c);
 localStorage.setItem('takrim_current',sel.t+' | সেশন '+sel.s+' | সেমিস্টার '+sel.sm);
 location.href='dashboard.html';}
 function adminGate(){
