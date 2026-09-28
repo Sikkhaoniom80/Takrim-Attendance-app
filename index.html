@@ -1,136 +1,40 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Malek Admission System</title>
-<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>তাকরিম শিক্ষা নিকেতন - হাজিরা</title>
 <style>
-*{box-sizing:border-box;font-family:'Hind Siliguri',sans-serif}
-body{margin:0;background:#0a2342;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:12px}
-.badge{width:100%;max-width:480px;border-radius:18px;border:2px solid #ffd700;margin-top:6px;display:block;box-shadow:0 0 25px rgba(212,175,55,.35)}
-.menu-btn{display:block;width:100%;max-width:380px;background:#fff;border:3px solid #ffd700;border-radius:18px;padding:16px;font-size:19px;font-weight:bold;color:#111;margin-top:14px;cursor:pointer;text-align:center}
-.menu-btn small{display:block;font-size:12px;color:#555;font-weight:normal;margin-top:4px}
-.page{display:none;width:100%;max-width:480px}.page.active{display:flex;flex-direction:column;align-items:center;width:100%}
-.card{background:white;margin:12px;border-radius:18px;padding:15px;width:100%}
-select,input{width:100%;padding:14px;border-radius:14px;border:1.5px solid #ccc;font-size:16px;margin:6px 0;background:white}
-.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;width:100%}
-.topbar button{background:#ffcc00;border:none;border-radius:10px;padding:8px 14px;font-weight:bold;cursor:pointer}
-.btn{width:100%;padding:13px;background:linear-gradient(135deg,#ffcc00,#ffb300);border:none;border-radius:12px;font-size:17px;font-weight:bold;color:#0f2d5a;margin-top:10px;cursor:pointer}
-.btn-blue{background:linear-gradient(135deg,#0f3d2e,#1a6b4f);color:#fff}
-.pa{padding:8px 14px;border-radius:10px;border:none;font-weight:bold;cursor:pointer}
-.a-on{background:#f44336;color:#fff}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#1a5c3a,#2d8a52);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.container{background:#fff;border-radius:20px;padding:40px 30px;max-width:420px;width:100%;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.3)}
+.badge{width:110px;height:110px;margin:0 auto 15px;background:linear-gradient(135deg,#1a5c3a,#2d8a52);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:52px;color:#fff}
+h1{color:#1a5c3a;font-size:24px;margin-bottom:5px}
+.subtitle{color:#888;margin-bottom:25px;font-size:14px}
+.btn{display:block;background:linear-gradient(135deg,#1a5c3a,#2d8a52);color:#fff;padding:15px;border-radius:12px;text-decoration:none;font-size:17px;font-weight:bold;margin:10px 0;cursor:pointer;border:none;width:100%}
+.btn.secondary{background:#f0f0f0;color:#1a5c3a}
 </style>
 </head>
 <body>
-
-<!-- ═══════════ 🖼️ ধাপ ১ শুরু: মনোগ্রাম 🖼️ ═══════════ -->
-<img class="badge" src="badge.jpg" alt="Malek Admission System" onerror="this.style.display='none'">
-<!-- ═══════════ 🖼️ ধাপ ১ শেষ ═══════════ -->
-
-<!-- ═══════════ 🏫 ধাপ ২ শুরু: প্রতিষ্ঠান তথ্য ও লগইন 🏫 ═══════════ -->
-<div id="home" class="page active">
-<button class="menu-btn" onclick="show('secAdd')">➕ প্রতিষ্ঠান যোগ করুন<small>লোগো, বাংলা-ইংরেজি নাম, EIIN, কোড, পাসওয়ার্ড</small></button>
-<button class="menu-btn" onclick="show('secTrade')">🎓 ট্রেড / সেশন / সেমিস্টার<small>১০টি ট্রেড, ৮টি সেশন, ৮টি সেমিস্টার</small></button>
-<button class="menu-btn" onclick="show('secLogin')">🔑 প্রতিষ্ঠান লগইন<small>কোড ও পাসওয়ার্ড দিয়ে প্রবেশ</small></button>
-<button class="menu-btn" onclick="adminGate()">🏫 প্রতিষ্ঠানের তালিকা দেখুন<small>শুধুমাত্র এডমিনের জন্য 🔒</small></button>
-<p id="selInfo" style="color:#ffcc00;font-size:13px;font-weight:bold;text-align:center;margin:12px 6px 0"></p>
+<div class="container">
+<div class="badge">🎓</div>
+<h1>তাকরিম শিক্ষা নিকেতন</h1>
+<p class="subtitle">ডিজিটাল হাজিরা ব্যবস্থাপনা</p>
+<button class="btn" onclick="adminLogin()">🔐 শিক্ষক লগইন</button>
+<a class="btn secondary" href="students.html">👥 ছাত্র তালিকা</a>
+<a class="btn secondary" href="reports.html">📊 রিপোর্ট</a>
 </div>
-
-<div id="secAdd" class="page">
-<div class="topbar"><button onclick="show('home')">⬅ ফিরুন</button><h2 style="color:#fff;margin:0">➕ নতুন প্রতিষ্ঠান</h2><span></span></div>
-<div class="card">
-<div style="border:2px solid #ffcc00;border-radius:22px;padding:18px;margin-bottom:12px">
-<div style="display:flex;gap:14px;align-items:center">
-<div style="text-align:center;min-width:90px">
-<label for="npLogoInp" style="cursor:pointer;display:block">
-<img id="npLogo" src="data:image/gif;base64,[STRIPPED]" style="width:80px;height:80px;border-radius:50%;border:5px solid #ffcc00;object-fit:cover;background:#f5f5f5;display:block;margin:0 auto">
-<div style="color:#1a3aed;font-weight:bold;margin-top:6px;font-size:14px">লোগো চেঞ্জ</div></label>
-<input type="file" id="npLogoInp" accept="image/*" onchange="npLogoChg(this)" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
-</div>
-<div style="flex:1">
-<input id="npBn" placeholder="বাংলা নাম" style="text-align:center;font-weight:bold">
-<input id="npEn" placeholder="English Name" style="text-align:center">
-<div style="display:flex;gap:8px">
-<input id="npEi" placeholder="EIIN" style="text-align:center;margin:0">
-<input id="npCd" placeholder="Code" style="text-align:center;margin:0">
-</div></div></div></div>
-<label style="font-weight:bold">🔑 পাসওয়ার্ড</label><input id="npPass" type="password" placeholder="পাসওয়ার্ড দিন">
-<button class="btn btn-blue" onclick="saveNewInst()">সেভ করুন ✔️</button>
-</div></div>
-
-<div id="secTrade" class="page">
-<div class="topbar"><button onclick="show('home')">⬅ ফিরুন</button><h2 style="color:#fff;margin:0">🎓 ট্রেড সিলেক্ট</h2><span></span></div>
-<div class="card" style="border:3px solid #ffcc00">
-<label style="font-weight:bold">🔧 ট্রেডের নাম (১০টি)</label><select id="s_trade"></select>
-<label style="font-weight:bold">📅 সেশন (৮টি)</label><select id="s_session"></select>
-<label style="font-weight:bold">📚 সেমিস্টার (৮টি)</label><select id="s_sem"></select>
-<button class="btn btn-blue" onclick="saveSel()">✅ নিশ্চিত করুন</button>
-</div></div>
-
-<div id="secLogin" class="page">
-<div class="topbar"><button onclick="show('home')">⬅ ফিরুন</button><span></span><span></span></div>
-<div class="card" style="text-align:center;border:3px solid #ffcc00">
-<div style="font-size:50px">🔐</div><h2>প্রতিষ্ঠান লগইন</h2>
-<label style="text-align:left;font-weight:bold">🏫 প্রতিষ্ঠান কোড</label><input id="l_code" placeholder="যেমন: 50018">
-<label style="text-align:left;font-weight:bold">🔑 পাসওয়ার্ড</label><input id="l_pass" type="password" placeholder="পাসওয়ার্ড দিন">
-<p style="font-size:13px;color:#555">ℹ️ আগে ট্রেড/সেশন/সেমিস্টার সিলেক্ট করুন</p>
-<button class="btn" onclick="teacherLogin()">প্রবেশ করুন ➜</button>
-<p id="l_msg" style="color:red;font-size:14px;margin-top:8px"></p>
-</div></div>
-
-<div id="secList" class="page">
-<div class="topbar"><button onclick="show('home')">⬅ ফিরুন</button><h2 style="color:#fff;margin:0">🏫 তালিকা</h2><span></span></div>
-<div class="card"><div id="instList"></div></div>
-</div>
-<!-- ═══════════ 🏫 ধাপ ২ শেষ ═══════════ -->
-
 <script>
-function show(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
-let users=JSON.parse(localStorage.getItem('takrim_users')||'{}');
-let insts=JSON.parse(localStorage.getItem('takrim_insts')||'[]');
-const TRADES=['কম্পিউটার টেকনোলজি','ইলেকট্রিক্যাল টেকনোলজি','মেকানিক্যাল টেকনোলজি','সিভিল টেকনোলজি','অটোমোবাইল টেকনোলজি','ইলেকট্রনিক্স টেকনোলজি','গার্মেন্টস ডিজাইন','রেফ্রিজারেশন ও এয়ারকন্ডিশন','ওয়েল্ডিং ও ফেব্রিকেশন','প্লাম্বিং ও পাইপ ফিটিং'];
-const SESSIONS=['2025-26','2024-25','2023-24','2022-23','2021-22','2020-21','2019-20','2018-19'];
-const SEMS=['০১','০২','০৩','০৪','০৫','০৬','০৭','০৮'];
-s_trade.innerHTML='<option value="">ট্রেড সিলেক্ট করুন</option>'+TRADES.map(t=>'<option value="'+t+'">'+t+'</option>').join('');
-s_session.innerHTML='<option value="">সেশন সিলেক্ট করুন</option>'+SESSIONS.map(s=>'<option value="'+s+'">সেশন '+s+'</option>').join('');
-s_sem.innerHTML='<option value="">সেমিস্টার সিলেক্ট করুন</option>'+SEMS.map(s=>'<option value="'+s+'">সেমিস্টার '+s+'</option>').join('');
-function getSel(){return JSON.parse(localStorage.getItem('takrim_sel')||'{}');}
-function saveSel(){if(!s_trade.value){alert('ট্রেড সিলেক্ট করুন');return;}if(!s_session.value){alert('সেশন সিলেক্ট করুন');return;}if(!s_sem.value){alert('সেমিস্টার সিলেক্ট করুন');return;}
-localStorage.setItem('takrim_sel',JSON.stringify({t:s_trade.value,s:s_session.value,sm:s_sem.value}));updateSelInfo();alert('✔️ সিলেক্ট হয়েছে');show('home');}
-function updateSelInfo(){let sel=getSel();selInfo.textContent=sel.t?('✅ '+sel.t+' | সেশন '+sel.s+' | সেমিস্টার '+sel.sm):'';if(sel.t){s_trade.value=sel.t;s_session.value=sel.s;s_sem.value=sel.sm;}}
-let npLogoData='';
-function npLogoChg(inp){let f=inp.files[0];if(!f)return;let r=new FileReader();r.onload=e=>{npLogoData=e.target.result;document.getElementById('npLogo').src=e.target.result;};r.readAsDataURL(f);}
-function saveNewInst(){let bn=npBn.value.trim();if(!bn){alert('প্রতিষ্ঠানের নাম দিন');return;}
-insts.push({name:bn,en:npEn.value.trim(),eiin:npEi.value.trim(),code:npCd.value.trim(),logo:npLogoData,pass:npPass.value});
-localStorage.setItem('takrim_insts',JSON.stringify(insts));
-if(npCd.value.trim()&&npPass.value){users[npCd.value.trim()]=npPass.value;localStorage.setItem('takrim_users',JSON.stringify(users));}
-npBn.value='';npEn.value='';npEi.value='';npCd.value='';npPass.value='';npLogoData='';npLogo.src='data:image/gif;base64,[STRIPPED]';
-alert('✔️ প্রতিষ্ঠান যোগ হয়েছে');show('home');}
-function teacherLogin(){let c=l_code.value.trim(),p=l_pass.value;
-if(!c||!p){l_msg.textContent='কোড ও পাসওয়ার্ড দিন';return;}
-let sel=getSel();
-if(!sel.t){l_msg.textContent='⚠️ আগে ট্রেড/সেশন/সেমিস্টার সিলেক্ট করুন';setTimeout(()=>show('secTrade'),900);return;}
-let i=insts.findIndex(s=>((s.code||'').trim()===c));
-let ok=(users[c]&&users[c]===p);if(!ok&&i>=0&&(insts[i].pass||'')===p)ok=true;
-if(!ok){l_msg.textContent='❌ ভুল কোড বা পাসওয়ার্ড!';return;}
-let s=insts[i>=0?i:0]||{};
-localStorage.setItem('collegeInfo',JSON.stringify({nameBn:s.name||'',nameEn:s.en||'',eiin:s.eiin||'',ins:s.code||'',logo:s.logo||''}));
-localStorage.setItem('takrim_current',sel.t+' | সেশন '+sel.s+' | সেমিস্টার '+sel.sm);
-location.href='dashboard.html';}
-function adminGate(){let ap=localStorage.getItem('takrim_admin_pass');
-if(!ap){let np=prompt('প্রথমবার: এডমিন পাসওয়ার্ড সেট করুন\n(এডমিন আইডি: takrim)');if(!np)return;localStorage.setItem('takrim_admin_pass',np);alert('✔️ এডমিন পাসওয়ার্ড সেট হয়েছে');openListScr();return;}
-if(prompt('🔐 এডমিন আইডি দিন')!=='takrim'){alert('❌ অনুমতি নেই!');return;}
-if(prompt('🔐 এডমিন পাসওয়ার্ড দিন')!==ap){alert('❌ ভুল পাসওয়ার্ড!');return;}
-openListScr();}
-function openListScr(){show('secList');let seen={},uniq=[];
-insts.forEach((s,i)=>{let k=(s.eiin&&s.eiin.trim()?s.eiin.trim():'')||(s.name||'').trim().toLowerCase();if(!seen[k]){seen[k]=1;uniq.push(i);}});
-instList.innerHTML=uniq.length?uniq.map(i=>{let s=insts[i];
-return '<div class="card" style="display:flex;align-items:center;gap:10px;padding:10px;margin:0 0 10px">'+(s.logo?'<img src="'+s.logo+'" style="width:45px;height:45px;border-radius:50%;object-fit:cover">':'🏫')+'<div style="flex:1"><b>'+s.name+'</b><br><small>EIIN: '+(s.eiin||'-')+' | Code: '+(s.code||'-')+'<br>🔑 পাসওয়ার্ড: <span id="pw_'+i+'" style="font-weight:bold;color:#0f2d5a">'+(s.pass||'-')+'</span> <button class="pa" style="padding:2px 8px;font-size:14px" onclick="togglePw('+i+')">👁️</button></small></div><button class="pa a-on" style="font-size:18px" onclick="delInst('+i+')">🗑️</button></div>';}).join(''):'<p style="text-align:center;color:#888">এখনো কোনো প্রতিষ্ঠান নেই</p>';}
-function togglePw(i){let el=document.getElementById('pw_'+i);if(el.dataset.hide==='1'){el.textContent=insts[i].pass||'-';el.dataset.hide='';}else{el.dataset.hide='1';el.textContent='••••••';}}
-function delInst(idx){if(!confirm('এই প্রতিষ্ঠান ডিলিট করবেন?'))return;let s=insts[idx];
-if(s.code&&users[s.code]){delete users[s.code];localStorage.setItem('takrim_users',JSON.stringify(users));}
-insts.splice(idx,1);localStorage.setItem('takrim_insts',JSON.stringify(insts));alert('✔️ প্রতিষ্ঠান ডিলিট হয়েছে');openListScr();}
-updateSelInfo();
+function adminLogin(){
+  var id = prompt("🔐 এডমিন আইডি দিন:");
+  if(id === null) return;
+  if(id.trim() !== "malek"){ alert("❌ ভুল এডমিন আইডি!"); return; }
+  var pw = prompt("🔑 পাসওয়ার্ড দিন:");
+  if(pw === null) return;
+  if(pw !== "malek1980"){ alert("❌ ভুল পাসওয়ার্ড!"); return; }
+  alert("✅ স্বাগতম!");
+  window.location.href = "dashboard.html";
+}
 </script>
 </body>
 </html>
