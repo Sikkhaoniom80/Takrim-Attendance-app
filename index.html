@@ -2,68 +2,93 @@
 <html lang="bn">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ডিজিটাল হাজিরা</title>
+<title>malek Attendance</title>
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;font-family:'Hind Siliguri',sans-serif}
 body{margin:0;background:#0a2342;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:12px}
-.card{background:white;margin:20px 12px 15px;border-radius:18px;padding:15px;width:100%;max-width:420px;display:none}
-.card.active{display:block;animation:fadeIn.3s}
-@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-.yellow-btn{background:#ffcc00;width:100%;padding:14px;border:none;border-radius:12px;font-weight:bold;cursor:pointer;font-size:16px}
-select,input{width:100%;padding:14px;border-radius:14px;border:1.5px solid #ccc;font-size:16px;margin:6px 0;background:white}
+.banner{width:100%;max-width:460px;border-radius:20px;overflow:hidden;border:3px solid #ffcc00;margin-top:8px;background:#000}
+.banner img{width:100%;display:block}
+.menu{width:100%;max-width:460px;background:#fff;border:3px solid #ffcc00;border-radius:18px;padding:18px 14px;margin-top:12px;text-align:center;cursor:pointer}
+.menu b{font-size:21px;color:#111}
+.menu small{color:#666;font-size:13px}
+.card{background:#fff;border-radius:18px;padding:18px;width:100%;max-width:460px;margin-top:12px;display:none}
+.card.active{display:block}
+select,input{width:100%;padding:13px;border-radius:12px;border:1.5px solid #ccc;font-size:16px;margin:6px 0;background:#fff}
+.btn{width:100%;padding:14px;border:none;border-radius:12px;font-size:17px;font-weight:bold;cursor:pointer;margin-top:8px}
+.btn-y{background:linear-gradient(135deg,#ffcc00,#ffb300);color:#0f2d5a}
+.btn-g{background:#16a34a;color:#fff}
+.btn-gray{background:#ddd;color:#111}
+label{font-weight:bold;font-size:14px}
+.row2{display:flex;gap:8px}.row2>div{flex:1}
 </style>
 </head>
 <body>
 
-<div id="homePage" class="card active" style="text-align:center">
-<div style="font-size:55px">🏫</div>
-<h2>ডিজিটাল হাজিরা</h2>
-<button class="yellow-btn" onclick="show('addInstPage')">➕ নতুন প্রতিষ্ঠান যোগ করুন</button>
-<button class="yellow-btn" style="margin-top:10px" onclick="show('loginPage')">🔑 প্রতিষ্ঠান লগইন</button>
-<button class="yellow-btn" style="margin-top:10px" onclick="show('instListPage')">📋 প্রতিষ্ঠান তালিকা দেখুন</button>
+<div id="homePage" style="width:100%;max-width:460px">
+<div class="banner"><img src="badge.jpg" onerror="this.onerror=null;this.src='logo.jpg'"></div>
+
+<div class="menu" onclick="show('addInstPage')"><b>➕ প্রতিষ্ঠান যোগ করুন</b><br><small>লোগো, বাংলা-ইংরেজি নাম, EIIN, কোড, পাসওয়ার্ড</small></div>
+
+<div class="menu" onclick="show('tssPage')"><b>🎓 ট্রেড / সেশন / সেমিস্টার</b><br><small>১০টি ট্রেড, ৮টি সেশন, ৮টি সেমিস্টার</small></div>
+
+<div class="menu" onclick="show('loginPage')"><b>🔑 প্রতিষ্ঠান লগইন</b><br><small>কোড ও পাসওয়ার্ড দিয়ে প্রবেশ</small></div>
+
+<div class="menu" onclick="show('instListPage')"><b>🏫 প্রতিষ্ঠানের তালিকা দেখুন</b><br><small>শুধুমাত্র এডমিনের জন্য 🔒</small></div>
 </div>
 
 <div id="addInstPage" class="card">
-<h3>নতুন প্রতিষ্ঠান</h3>
-<div onclick="npLogoInput.click()" style="text-align:center;cursor:pointer"><img id="npLogo" src="https://via.placeholder.com/100" style="width:100px;height:100px;border-radius:50%;border:3px solid #ffcc00"><div style="font-size:12px;color:blue">লোগো বাছুন</div><input type="file" id="npLogoInput" accept="image/*" style="display:none" onchange="npLogoChg(this)"></div>
+<h3 style="text-align:center">➕ প্রতিষ্ঠান যোগ করুন</h3>
+<div onclick="npLogoInput.click()" style="text-align:center;cursor:pointer"><img id="npLogo" src="https://via.placeholder.com/100" style="width:100px;height:100px;border-radius:50%;border:3px solid #ffcc00;object-fit:cover"><div style="font-size:12px;color:blue">লোগো বাছুন</div><input type="file" id="npLogoInput" accept="image/*" style="display:none" onchange="npLogoChg(this)"></div>
 <input id="npBn" placeholder="বাংলা নাম"><input id="npEn" placeholder="English Name"><input id="npEi" placeholder="EIIN"><input id="npCd" placeholder="প্রতিষ্ঠান কোড"><input id="npPass" type="password" placeholder="পাসওয়ার্ড সেট করুন">
-<button class="yellow-btn" onclick="saveNewInst()">✔️ সেভ করুন</button>
-<button class="yellow-btn" style="background:#ddd;margin-top:8px" onclick="show('homePage')">⬅️ হোম</button>
+<button class="btn btn-y" onclick="saveNewInst()">✔️ সেভ করুন</button>
+<button class="btn btn-gray" onclick="show('homePage')">⬅️ হোম</button>
+</div>
+
+<div id="tssPage" class="card">
+<h3 style="text-align:center">🎓 ট্রেড / সেশন / সেমিস্টার</h3>
+<label>ট্রেড</label><select id="t_trade"></select>
+<div class="row2"><div><label>সেশন</label><select id="t_sess"></select></div><div><label>সেমিস্টার</label><select id="t_sem"></select></div></div>
+<button class="btn btn-y" onclick="saveTSS()">✔️ সেভ করুন</button>
+<button class="btn btn-gray" onclick="show('homePage')">⬅️ হোম</button>
 </div>
 
 <div id="loginPage" class="card">
-<h3>প্রতিষ্ঠান লগইন</h3>
-<select id="l_inst"></select>
-<select id="l_class"></select>
-<input id="l_code" placeholder="প্রতিষ্ঠান কোড"><input id="l_pass" type="password" placeholder="পাসওয়ার্ড">
-<button class="yellow-btn" onclick="teacherLogin()">প্রবেশ করুন ➜</button>
-<button class="yellow-btn" style="background:#ddd;margin-top:8px" onclick="show('homePage')">⬅️ হোম</button>
+<h3 style="text-align:center">🔑 প্রতিষ্ঠান লগইন</h3>
+<label>🏫 প্রতিষ্ঠান</label><select id="l_inst"></select>
+<label>🔑 প্রতিষ্ঠান কোড</label><input id="l_code" placeholder="যেমন: 50018">
+<label>🔑 পাসওয়ার্ড</label><input id="l_pass" type="password" placeholder="পাসওয়ার্ড দিন">
+<button class="btn btn-y" onclick="teacherLogin()">প্রবেশ করুন ➜</button>
+<button class="btn btn-gray" onclick="show('homePage')">⬅️ হোম</button>
 <p id="l_msg" style="color:red"></p>
 </div>
 
 <div id="instListPage" class="card">
-<h3>প্রতিষ্ঠান তালিকা</h3>
+<h3 style="text-align:center">🏫 প্রতিষ্ঠানের তালিকা</h3>
 <input id="adminPass" type="password" placeholder="অ্যাডমিন পাসওয়ার্ড (admin123)">
-<button class="yellow-btn" onclick="adminGate()">দেখুন</button>
+<button class="btn btn-y" onclick="adminGate()">দেখুন</button>
 <div id="instTable"></div>
-<button class="yellow-btn" style="background:#ddd;margin-top:8px" onclick="show('homePage')">⬅️ হোম</button>
+<button class="btn btn-gray" onclick="show('homePage')">⬅️ হোম</button>
 </div>
 
 <script>
 let insts=JSON.parse(localStorage.getItem('takrim_insts')||'[]');
 let users=JSON.parse(localStorage.getItem('takrim_users')||'{}');
-const LCLASSES=["১ম শ্রেণি","২য় শ্রেণি","৩য় শ্রেণি","৪র্থ শ্রেণি","৫ম শ্রেণি","৬ষ্ঠ শ্রেণি","৭ম শ্রেণি","৮ম শ্রেণি","৯ম শ্রেণি","১০ম শ্রেণি"];
-function show(id){document.querySelectorAll('.card').forEach(c=>c.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
-function fillLogin(){l_inst.innerHTML=insts.map((s,i)=>'<option value="'+i+'">'+s.name+'</option>').join('');l_class.innerHTML=LCLASSES.map(c=>'<option>'+c+'</option>').join('');}
+const TRADES=["কম্পিউটার টেকনোলজি","ইলেকট্রিক্যাল টেকনোলজি","সিভিল টেকনোলজি","মেকানিক্যাল টেকনোলজি","ইলেকট্রনিক্স টেকনোলজি","পাওয়ার টেকনোলজি","টেক্সটাইল টেকনোলজি","গার্মেন্টস টেকনোলজি","ফুড টেকনোলজি","অটোমোবাইল টেকনোলজি"];
+const SESS=["2025-26","2024-25","2023-24","2022-23","2026-27","2027-28","2028-29","2029-30"];
+const SEMS=["০১","০২","০৩","০৪","০৫","০৬","০৭","০৮"];
+function show(id){document.querySelectorAll('.card').forEach(c=>c.classList.remove('active'));document.getElementById('homePage').style.display=id=='homePage'?'block':'none';if(id!='homePage')document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
 function npLogoChg(i){let r=new FileReader();r.onload=e=>npLogo.src=e.target.result;r.readAsDataURL(i.files[0]);}
-function saveNewInst(){let bn=npBn.value.trim(),cd=npCd.value.trim(),pw=npPass.value;if(!bn||!cd||!pw)return alert('নাম, কোড ও পাসওয়ার্ড দিন!');if(insts.find(x=>x.code==cd))return alert('এই কোডে প্রতিষ্ঠান আছে!');insts.push({name:bn,en:npEn.value.trim(),eiin:npEi.value.trim(),code:cd,logo:npLogo.src,pass:pw});users[cd]=pw;localStorage.setItem('takrim_insts',JSON.stringify(insts));localStorage.setItem('takrim_users',JSON.stringify(users));npBn.value=npEn.value=npEi.value=npCd.value=npPass.value='';npLogo.src='https://via.placeholder.com/100';fillLogin();alert('✔️ সেভ হয়েছে!');show('homePage');}
-function teacherLogin(){let s=insts[+l_inst.value];let cd=l_code.value.trim(),pw=l_pass.value;let cl=l_class.value;let ok=(s&&s.code==cd&&s.pass==pw)||(users[cd]&&users[cd]==pw);if(!ok){l_msg.innerText='❌ ভুল কোড বা পাসওয়ার্ড!';return;}localStorage.setItem('collegeInfo',JSON.stringify({nameBn:s?s.name:'',nameEn:s?s.en:'',eiin:s?s.eiin:'',ins:s?s.code:'',logo:s?s.logo:''}));localStorage.setItem('takrim_current',cl);localStorage.setItem('takrim_current_class',cl);localStorage.setItem('takrim_session','1');location.href='dashboard.html';}
-function adminGate(){if(adminPass.value!=='admin123')return alert('ভুল পাসওয়ার্ড!');openListScr(true);}
-function openListScr(ok){if(!ok)return;let h='<table style="width:100%;border-collapse:collapse;font-size:13px;margin-top:10px"><tr style="background:#0f3d2e;color:#fff"><th style="padding:8px;border:1px solid #ccc">নাম</th><th style="padding:8px;border:1px solid #ccc">কোড</th><th style="padding:8px;border:1px solid #ccc">পাসওয়ার্ড</th><th style="padding:8px;border:1px solid #ccc">🗑️</th></tr>';insts.forEach((s,i)=>{h+='<tr><td style="padding:8px;border:1px solid #ccc">'+s.name+'</td><td style="padding:8px;border:1px solid #ccc">'+s.code+'</td><td style="padding:8px;border:1px solid #ccc"><span>•••••• </span><button onclick="togglePw('+i+',this)" style="border:none;background:#eee;border-radius:6px;cursor:pointer">👁️</button></td><td style="padding:8px;border:1px solid #ccc;text-align:center"><button onclick="delInst('+i+')" style="border:none;background:#fee2e2;border-radius:6px;cursor:pointer">🗑️</button></td></tr>';});h+='</table>';instTable.innerHTML=h;}
+function saveNewInst(){let bn=npBn.value.trim(),cd=npCd.value.trim(),pw=npPass.value;if(!bn||!cd||!pw)return alert('নাম, কোড ও পাসওয়ার্ড দিন!');if(insts.find(x=>x.code==cd))return alert('এই কোডে প্রতিষ্ঠান আছে!');insts.push({name:bn,en:npEn.value.trim(),eiin:npEi.value.trim(),code:cd,logo:npLogo.src,pass:pw});users[cd]=pw;localStorage.setItem('takrim_insts',JSON.stringify(insts));localStorage.setItem('takrim_users',JSON.stringify(users));npBn.value=npEn.value=npEi.value=npCd.value=npPass.value='';npLogo.src='https://via.placeholder.com/100';fillInst();alert('✔️ সেভ হয়েছে!');show('homePage');}
+function fillInst(){l_inst.innerHTML=insts.map((s,i)=>'<option value="'+i+'">'+s.name+'</option>').join('');}
+function fillTSS(){t_trade.innerHTML=TRADES.map(t=>'<option'+(localStorage.getItem('takrim_trade')==t?' selected':'')+'>'+t+'</option>').join('');t_sess.innerHTML=SESS.map(t=>'<option'+(localStorage.getItem('takrim_sess')==t?' selected':'')+'>'+t+'</option>').join('');t_sem.innerHTML=SEMS.map(t=>'<option'+(localStorage.getItem('takrim_sem')==t?' selected':'')+'>'+t+'</option>').join('');}
+function saveTSS(){localStorage.setItem('takrim_trade',t_trade.value);localStorage.setItem('takrim_sess',t_sess.value);localStorage.setItem('takrim_sem',t_sem.value);alert('✔️ সেভ হয়েছে!');show('homePage');}
+function teacherLogin(){let s=insts[+l_inst.value];let cd=l_code.value.trim(),pw=l_pass.value;let ok=(s&&s.code==cd&&s.pass==pw)||(users[cd]&&users[cd]==pw);if(!ok){l_msg.innerText='❌ ভুল কোড বা পাসওয়ার্ড!';return;}let cls=(localStorage.getItem('takrim_trade')||TRADES[0])+' | সেশন '+(localStorage.getItem('takrim_sess')||SESS[0])+' | সেমিস্টার '+(localStorage.getItem('takrim_sem')||SEMS[0]);localStorage.setItem('collegeInfo',JSON.stringify({nameBn:s?s.name:'',nameEn:s?s.en:'',eiin:s?s.eiin:'',ins:s?s.code:'',logo:s?s.logo:''}));localStorage.setItem('takrim_current',cls);localStorage.setItem('takrim_current_class',cls);localStorage.setItem('takrim_session','1');location.href='dashboard.html';}
+function adminGate(){if(adminPass.value!=='admin123')return alert('ভুল পাসওয়ার্ড!');openListScr();}
+function openListScr(){let h='<table style="width:100%;border-collapse:collapse;font-size:13px;margin-top:10px"><tr style="background:#0f3d2e;color:#fff"><th style="padding:8px;border:1px solid #ccc">নাম</th><th style="padding:8px;border:1px solid #ccc">কোড</th><th style="padding:8px;border:1px solid #ccc">পাসওয়ার্ড</th><th style="padding:8px;border:1px solid #ccc">🗑️</th></tr>';insts.forEach((s,i)=>{h+='<tr><td style="padding:8px;border:1px solid #ccc">'+s.name+'</td><td style="padding:8px;border:1px solid #ccc">'+s.code+'</td><td style="padding:8px;border:1px solid #ccc"><span>•••••• </span><button onclick="togglePw('+i+',this)" style="border:none;background:#eee;border-radius:6px;cursor:pointer">👁️</button></td><td style="padding:8px;border:1px solid #ccc;text-align:center"><button onclick="delInst('+i+')" style="border:none;background:#fee2e2;border-radius:6px;cursor:pointer">🗑️</button></td></tr>';});h+='</table>';instTable.innerHTML=h;}
 function togglePw(i,btn){let sp=btn.parentElement.querySelector('span');sp.textContent=sp.textContent.trim()=='••••••'?insts[i].pass+' ':'•••••• ';}
-function delInst(i){if(!confirm('ডিলিট করবেন?'))return;let cd=insts[i].code;insts.splice(i,1);delete users[cd];localStorage.setItem('takrim_insts',JSON.stringify(insts));localStorage.setItem('takrim_users',JSON.stringify(users));fillLogin();openListScr(true);}
-fillLogin();
+function delInst(i){if(!confirm('ডিলিট করবেন?'))return;let cd=insts[i].code;insts.splice(i,1);delete users[cd];localStorage.setItem('takrim_insts',JSON.stringify(insts));localStorage.setItem('takrim_users',JSON.stringify(users));fillInst();openListScr();}
+fillInst();fillTSS();
 </script>
 </body>
 </html>
