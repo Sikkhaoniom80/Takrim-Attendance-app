@@ -17,6 +17,7 @@ select,input{width:100%;padding:14px;border-radius:14px;border:1.5px solid #ccc;
 .topbar button{background:#ffcc00;border:none;border-radius:10px;padding:8px 14px;font-weight:bold;cursor:pointer}
 .btn{width:100%;padding:13px;background:linear-gradient(135deg,#ffcc00,#ffb300);border:none;border-radius:12px;font-size:17px;font-weight:bold;color:#0f2d5a;margin-top:10px;cursor:pointer}
 .btn-blue{background:linear-gradient(135deg,#0f3d2e,#1a6b4f);color:#fff}
+.btn-edit{background:#e8eefc;color:#0f2d5a;padding:10px;font-size:15px}
 .pa{padding:8px 14px;border-radius:10px;border:none;font-weight:bold;cursor:pointer}
 .a-on{background:#f44336;color:#fff}
 .sess-row{display:flex;align-items:center;gap:8px;margin:4px 0}
@@ -66,9 +67,13 @@ select,input{width:100%;padding:14px;border-radius:14px;border:1.5px solid #ccc;
 <div class="topbar"><button onclick="show('home')">⬅ ফিরুন</button><h2 style="color:#fff;margin:0">🎓 ট্রেড সিলেক্ট</h2><span></span></div>
 <div class="card" style="border:3px solid #ffcc00">
 <label style="font-weight:bold">🔧 ট্রেডের নাম (১০টি)</label><select id="s_trade"></select>
-<label style="font-weight:bold">📅 সেশন (৮টি) — সংখ্যা নিজে লিখুন</label>
+<label style="font-weight:bold">📅 সেশন</label>
+<select id="s_session"></select>
+<button type="button" class="btn btn-edit" onclick="toggleSessEdit()">✏️ সেশন লিস্ট লিখুন / বদলান</button>
+<div id="sessEdit" style="display:none;margin-top:6px">
 <div id="sessRows"></div>
-<select id="s_session" style="display:none"></select>
+<p style="font-size:12px;color:#555;margin:4px 0">ℹ️ ৮টি সেশনের সংখ্যা নিজে লিখুন (যেমন: 2025-26)</p>
+</div>
 <label style="font-weight:bold">📚 সেমিস্টার (৮টি)</label><select id="s_sem"></select>
 <button class="btn btn-blue" onclick="saveSel()">✅ নিশ্চিত করুন</button>
 </div></div>
@@ -98,21 +103,29 @@ const TRADES=['কম্পিউটার টেকনোলজি','ইলে�
 const SEMS=['০১','০২','০৩','০৪','০৫','০৬','০৭','০৮'];
 s_trade.innerHTML='<option value="">ট্রেড সিলেক্ট করুন</option>'+TRADES.map(t=>'<option value="'+t+'">'+t+'</option>').join('');
 s_sem.innerHTML='<option value="">সেমিস্টার সিলেক্ট করুন</option>'+SEMS.map(s=>'<option value="'+s+'">সেমিস্টার '+s+'</option>').join('');
-function buildSessionRows(){let saved=[];try{saved=JSON.parse(localStorage.getItem('takrim_sessions')||'[]');}catch(e){}
-let h='';for(let i=0;i<8;i++){let v=(saved[i]||'').replace(/"/g,'&quot;');
+function getStoredSessions(){try{return JSON.parse(localStorage.getItem('takrim_sessions')||'[]');}catch(e){return[];}}
+function buildSessionRows(){let saved=getStoredSessions();let h='';
+for(let i=0;i<8;i++){let v=String(saved[i]||'').replace(/"/g,'&quot;');
 h+='<div class="sess-row"><span>সেশন</span><input class="sess_inp" value="'+v+'" placeholder="যেমন: 2025-26"></div>';}
 sessRows.innerHTML=h;}
 function getSessionVals(){return Array.from(document.querySelectorAll('.sess_inp')).map(x=>x.value.trim()).filter(x=>x);}
 function getSessionAll(){return Array.from(document.querySelectorAll('.sess_inp')).map(x=>x.value.trim());}
-buildSessionRows();
+function refreshSessionDropdown(){let vals=getStoredSessions().map(x=>String(x||'').trim()).filter(x=>x);
+let cur=s_session.value;
+s_session.innerHTML='<option value="">সেশন সিলেক্ট করুন</option>'+vals.map(s=>'<option value="'+s+'">সেশন '+s+'</option>').join('');
+if(cur&&vals.indexOf(cur)>=0)s_session.value=cur;}
+function toggleSessEdit(){let d=document.getElementById('sessEdit');d.style.display=(d.style.display==='none')?'block':'none';}
+buildSessionRows();refreshSessionDropdown();
+if(!getStoredSessions().filter(x=>String(x||'').trim()).length){document.getElementById('sessEdit').style.display='block';}
 function getSel(){return JSON.parse(localStorage.getItem('takrim_sel')||'{}');}
 function saveSel(){if(!s_trade.value){alert('ট্রেড সিলেক্ট করুন');return;}
-let vals=getSessionVals();if(!vals.length){alert('সেশন লিখুন');return;}
-localStorage.setItem('takrim_sessions',JSON.stringify(getSessionAll()));
-s_session.innerHTML=vals.map(s=>'<option value="'+s+'">সেশন '+s+'</option>').join('');s_session.value=vals[0];
+let typed=getSessionVals();
+if(typed.length){localStorage.setItem('takrim_sessions',JSON.stringify(getSessionAll()));refreshSessionDropdown();}
+if(!s_session.value){alert('সেশন সিলেক্ট করুন (তালিকা খালি থাকলে ✏️ চেপে লিখুন)');return;}
 if(!s_sem.value){alert('সেমিস্টার সিলেক্ট করুন');return;}
 localStorage.setItem('takrim_sel',JSON.stringify({t:s_trade.value,s:s_session.value,sm:s_sem.value}));updateSelInfo();alert('✔️ সিলেক্ট হয়েছে');show('home');}
-function updateSelInfo(){let sel=getSel();selInfo.textContent=sel.t?('✅ '+sel.t+' | সেশন '+sel.s+' | সেমিস্টার '+sel.sm):'';if(sel.t){s_trade.value=sel.t;s_sem.value=sel.sm;}}
+function updateSelInfo(){let sel=getSel();selInfo.textContent=sel.t?('✅ '+sel.t+' | সেশন '+sel.s+' | সেমিস্টার '+sel.sm):'';
+if(sel.t){s_trade.value=sel.t;refreshSessionDropdown();if(sel.s)s_session.value=sel.s;s_sem.value=sel.sm;}}
 let npLogoData='';
 function npLogoChg(inp){let f=inp.files[0];if(!f)return;let r=new FileReader();r.onload=e=>{npLogoData=e.target.result;document.getElementById('npLogo').src=e.target.result;};r.readAsDataURL(f);}
 function saveNewInst(){let bn=npBn.value.trim();if(!bn){alert('প্রতিষ্ঠানের নাম দিন');return;}
