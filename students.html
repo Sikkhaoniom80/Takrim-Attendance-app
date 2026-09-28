@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ছাত্র হাজিরা - তাকরিম শিক্ষা নিকেতন</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Hind Siliguri',Arial,sans-serif;background:linear-gradient(135deg,#0d1b2a,#1b3a5c);min-height:100vh;color:#fff;padding:16px}
+.container{max-width:700px;margin:0 auto}
+.header{text-align:center;margin-bottom:20px}
+.header img{width:70px;height:70px;border-radius:50%;border:3px solid #ffd700}
+.header h1{font-size:20px;color:#ffd700;margin-top:8px}
+.datebar{background:rgba(255,215,0,.12);border:1px solid #ffd700;border-radius:12px;padding:12px;text-align:center;margin-bottom:16px;font-size:16px}
+.student{background:rgba(255,255,255,.07);border-radius:12px;padding:14px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.student.info{display:flex;align-items:center;gap:12px}
+.roll{background:#ffd700;color:#0d1b2a;font-weight:bold;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px}
+.name{font-size:16px}
+.btns{display:flex;gap:8px}
+.pbtn{border:none;padding:10px 18px;border-radius:20px;font-size:14px;font-weight:bold;cursor:pointer;opacity:.35}
+.pbtn.on{opacity:1}
+.yes{background:#22c55e;color:#fff}
+.no{background:#ef4444;color:#fff}
+.save{width:100%;background:linear-gradient(135deg,#ffd700,#ffaa00);color:#0d1b2a;font-weight:bold;font-size:18px;padding:15px;border:none;border-radius:30px;margin-top:16px;cursor:pointer}
+.report{background:rgba(255,255,255,.07);border-radius:12px;padding:16px;margin-top:20px}
+.report h3{color:#ffd700;margin-bottom:10px}
+.report table{width:100%;font-size:14px;border-collapse:collapse}
+.report td,.report th{padding:8px;border-bottom:1px solid rgba(255,255,255,.12);text-align:left}
+.back{display:block;text-align:center;margin-top:16px;color:#aaa;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<img src="badge.jpg" alt="ব্যাজ">
+<h1>তাকরিম শিক্ষা নিকেতন</h1>
+</div>
+<div class="datebar">📅 <span id="d"></span></div>
+<div id="list"></div>
+<button class="save" onclick="save()">💾 হাজিরা সংরক্ষণ করুন</button>
+<div class="report" id="rep" style="display:none">
+<h3>📊 আজকের রিপোর্ট</h3>
+<table><tr><th>রোল</th><th>নাম</th><th>অবস্থা</th></tr><tbody id="rt"></tbody></table>
+</div>
+<a class="back" href="dashboard.html">← ড্যাশবোর্ডে ফিরুন</a>
+</div>
+<script>
+var students=["রহিম উদ্দিন","করিম শেখ","আব্দুল মালেক","সাকিব হাসান","তানভীর আহমেদ","নাইম ইসলাম","ফারহান চৌধুরী","মেহেদী হাসান","রাকিব খান","সোহান মিয়া"];
+var att={};
+document.getElementById('d').textContent=new Date().toLocaleDateString('bn-BD',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+var L=document.getElementById('list');
+students.forEach(function(n,i){
+att[i]='P';
+var d=document.createElement('div');d.className='student';
+d.innerHTML='<div class="info"><div class="roll">'+(i+1)+'</div><div class="name">'+n+'</div></div><div class="btns"><button class="pbtn yes on" id="y'+i+'" onclick="m('+i+',\'P\')">উপস্থিত</button><button class="pbtn no" id="n'+i+'" onclick="m('+i+',\'A\')">অনুপস্থিত</button></div>';
+L.appendChild(d);
+});
+function m(i,v){att[i]=v;document.getElementById('y'+i).classList.toggle('on',v==='P');document.getElementById('n'+i).classList.toggle('on',v==='A');}
+function save(){
+var k='att_'+new Date().toISOString().slice(0,10);
+localStorage.setItem(k,JSON.stringify(att));
+var p=0;var h='';
+students.forEach(function(n,i){var s=att[i]==='P';if(s)p++;h+='<tr><td>'+(i+1)+'</td><td>'+n+'</td><td>'+(s?'✅ উপস্থিত':'❌ অনুপস্থিত')+'</td></tr>';});
+document.getElementById('rt').innerHTML=h;
+document.getElementById('rep').style.display='block';
+alert('✅ হাজিরা সংরক্ষণ হয়েছে! উপস্থিত: '+p+'/'+students.length);
+window.scrollTo(0,document.body.scrollHeight);
+}
+</script>
+</body>
+</html>
