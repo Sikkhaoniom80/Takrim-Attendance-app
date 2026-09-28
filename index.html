@@ -31,7 +31,7 @@ select,input{width:100%;padding:14px;border-radius:14px;border:1.5px solid #ccc;
 <!-- ═══════════ 🏫 ধাপ ২ শুরু: প্রতিষ্ঠান তথ্য ও লগইন 🏫 ═══════════ -->
 <div id="home" class="page active">
 <button class="menu-btn" onclick="show('secAdd')">➕ প্রতিষ্ঠান যোগ করুন<small>লোগো, বাংলা-ইংরেজি নাম, EIIN, কোড, পাসওয়ার্ড</small></button>
-<button class="menu-btn" onclick="show('secTrade')">🎓 ট্রেড / সেশন / সেমিস্টার<small>১০টি ট্রেড, ৮টি সেশন, ৮টি সেমিস্টার</small></button>
+<button class="menu-btn" onclick="show('secTrade')">🎓 ট্রেড / সেশন / সেমিস্টার<small>১০টি ট্রেড, সেশন সংখ্যা, ৮টি সেমিস্টার</small></button>
 <button class="menu-btn" onclick="show('secLogin')">🔑 প্রতিষ্ঠান লগইন<small>কোড ও পাসওয়ার্ড দিয়ে প্রবেশ</small></button>
 <button class="menu-btn" onclick="adminGate()">🏫 প্রতিষ্ঠানের তালিকা দেখুন<small>শুধুমাত্র এডমিনের জন্য 🔒</small></button>
 <p id="selInfo" style="color:#ffcc00;font-size:13px;font-weight:bold;text-align:center;margin:12px 6px 0"></p>
@@ -44,7 +44,7 @@ select,input{width:100%;padding:14px;border-radius:14px;border:1.5px solid #ccc;
 <div style="display:flex;gap:14px;align-items:center">
 <div style="text-align:center;min-width:90px">
 <label for="npLogoInp" style="cursor:pointer;display:block">
-<img id="npLogo" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" style="width:80px;height:80px;border-radius:50%;border:5px solid #ffcc00;object-fit:cover;background:#f5f5f5;display:block;margin:0 auto">
+<img id="npLogo" src="data:image/gif;base64,[STRIPPED]" style="width:80px;height:80px;border-radius:50%;border:5px solid #ffcc00;object-fit:cover;background:#f5f5f5;display:block;margin:0 auto">
 <div style="color:#1a3aed;font-weight:bold;margin-top:6px;font-size:14px">লোগো চেঞ্জ</div></label>
 <input type="file" id="npLogoInp" accept="image/*" onchange="npLogoChg(this)" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
 </div>
@@ -63,7 +63,8 @@ select,input{width:100%;padding:14px;border-radius:14px;border:1.5px solid #ccc;
 <div class="topbar"><button onclick="show('home')">⬅ ফিরুন</button><h2 style="color:#fff;margin:0">🎓 ট্রেড সিলেক্ট</h2><span></span></div>
 <div class="card" style="border:3px solid #ffcc00">
 <label style="font-weight:bold">🔧 ট্রেডের নাম (১০টি)</label><select id="s_trade"></select>
-<label style="font-weight:bold">📅 সেশন (৮টি)</label><select id="s_session"></select>
+<label style="font-weight:bold">📅 সেশন সংখ্যা</label><input id="s_session_num" type="number" min="1" max="30" value="8" placeholder="কয়টি সেশন?">
+<select id="s_session" style="display:none"></select>
 <label style="font-weight:bold">📚 সেমিস্টার (৮টি)</label><select id="s_sem"></select>
 <button class="btn btn-blue" onclick="saveSel()">✅ নিশ্চিত করুন</button>
 </div></div>
@@ -90,22 +91,26 @@ function show(id){document.querySelectorAll('.page').forEach(p=>p.classList.remo
 let users=JSON.parse(localStorage.getItem('takrim_users')||'{}');
 let insts=JSON.parse(localStorage.getItem('takrim_insts')||'[]');
 const TRADES=['কম্পিউটার টেকনোলজি','ইলেকট্রিক্যাল টেকনোলজি','মেকানিক্যাল টেকনোলজি','সিভিল টেকনোলজি','অটোমোবাইল টেকনোলজি','ইলেকট্রনিক্স টেকনোলজি','গার্মেন্টস ডিজাইন','রেফ্রিজারেশন ও এয়ারকন্ডিশন','ওয়েল্ডিং ও ফেব্রিকেশন','প্লাম্বিং ও পাইপ ফিটিং'];
-const SESSIONS=['2025-26','2024-25','2023-24','2022-23','2021-22','2020-21','2019-20','2018-19'];
+function makeSessions(n){const y=new Date().getFullYear();let a=[];for(let i=0;i<n;i++){a.push(y-i+'-'+String(y-i+1).slice(2));}return a;}
+function buildSessions(){let n=parseInt(s_session_num.value)||8;if(n<1)n=1;if(n>30)n=30;let L=makeSessions(n);s_session.innerHTML=L.map(s=>'<option value="'+s+'">সেশন '+s+'</option>').join('');s_session.value=L[0];}
 const SEMS=['০১','০২','০৩','০৪','০৫','০৬','০৭','০৮'];
 s_trade.innerHTML='<option value="">ট্রেড সিলেক্ট করুন</option>'+TRADES.map(t=>'<option value="'+t+'">'+t+'</option>').join('');
-s_session.innerHTML='<option value="">সেশন সিলেক্ট করুন</option>'+SESSIONS.map(s=>'<option value="'+s+'">সেশন '+s+'</option>').join('');
+s_session_num.value=localStorage.getItem('takrim_session_count')||'8';
+s_session_num.addEventListener('input',buildSessions);
+buildSessions();
 s_sem.innerHTML='<option value="">সেমিস্টার সিলেক্ট করুন</option>'+SEMS.map(s=>'<option value="'+s+'">সেমিস্টার '+s+'</option>').join('');
 function getSel(){return JSON.parse(localStorage.getItem('takrim_sel')||'{}');}
-function saveSel(){if(!s_trade.value){alert('ট্রেড সিলেক্ট করুন');return;}if(!s_session.value){alert('সেশন সিলেক্ট করুন');return;}if(!s_sem.value){alert('সেমিস্টার সিলেক্ট করুন');return;}
+function saveSel(){if(!s_trade.value){alert('ট্রেড সিলেক্ট করুন');return;}if(!s_sem.value){alert('সেমিস্টার সিলেক্ট করুন');return;}
+let sn=parseInt(s_session_num.value)||8;localStorage.setItem('takrim_session_count',sn);buildSessions();
 localStorage.setItem('takrim_sel',JSON.stringify({t:s_trade.value,s:s_session.value,sm:s_sem.value}));updateSelInfo();alert('✔️ সিলেক্ট হয়েছে');show('home');}
-function updateSelInfo(){let sel=getSel();selInfo.textContent=sel.t?('✅ '+sel.t+' | সেশন '+sel.s+' | সেমিস্টার '+sel.sm):'';if(sel.t){s_trade.value=sel.t;s_session.value=sel.s;s_sem.value=sel.sm;}}
+function updateSelInfo(){let sel=getSel();selInfo.textContent=sel.t?('✅ '+sel.t+' | সেশন '+sel.s+' | সেমিস্টার '+sel.sm):'';if(sel.t){s_trade.value=sel.t;s_sem.value=sel.sm;}}
 let npLogoData='';
 function npLogoChg(inp){let f=inp.files[0];if(!f)return;let r=new FileReader();r.onload=e=>{npLogoData=e.target.result;document.getElementById('npLogo').src=e.target.result;};r.readAsDataURL(f);}
 function saveNewInst(){let bn=npBn.value.trim();if(!bn){alert('প্রতিষ্ঠানের নাম দিন');return;}
 insts.push({name:bn,en:npEn.value.trim(),eiin:npEi.value.trim(),code:npCd.value.trim(),logo:npLogoData,pass:npPass.value});
 localStorage.setItem('takrim_insts',JSON.stringify(insts));
 if(npCd.value.trim()&&npPass.value){users[npCd.value.trim()]=npPass.value;localStorage.setItem('takrim_users',JSON.stringify(users));}
-npBn.value='';npEn.value='';npEi.value='';npCd.value='';npPass.value='';npLogoData='';npLogo.src='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+npBn.value='';npEn.value='';npEi.value='';npCd.value='';npPass.value='';npLogoData='';npLogo.src='data:image/gif;base64,[STRIPPED]';
 alert('✔️ প্রতিষ্ঠান যোগ হয়েছে');show('home');}
 function teacherLogin(){let c=l_code.value.trim(),p=l_pass.value;
 if(!c||!p){l_msg.textContent='কোড ও পাসওয়ার্ড দিন';return;}
