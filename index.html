@@ -2,175 +2,78 @@
 <html lang="bn">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Malek Admission System</title>
+<title>হাজিরা - লগইন</title>
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;font-family:'Hind Siliguri',sans-serif}
 body{margin:0;background:#0a2342;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:12px}
-.badge{width:100%;max-width:480px;height:50vh;object-fit:cover;border-radius:18px;border:2px solid #ffd700;margin-top:6px;display:block;box-shadow:0 0 25px rgba(212,175,55,.35)}
-.menu-btn{display:block;width:100%;max-width:380px;background:#fff;border:3px solid #ffd700;border-radius:18px;padding:16px;font-size:19px;font-weight:bold;color:#111;margin-top:14px;cursor:pointer;text-align:center}
-.menu-btn small{display:block;font-size:12px;color:#555;font-weight:normal;margin-top:4px}
-.page{display:none;width:100%;max-width:480px}.page.active{display:flex;flex-direction:column;align-items:center;width:100%}
-.card{background:white;margin:12px;border-radius:18px;padding:15px;width:100%}
-select,input{width:100%;padding:14px;border-radius:14px;border:1.5px solid #ccc;font-size:16px;margin:6px 0;background:white}
-.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;width:100%}
-.topbar button{background:#ffcc00;border:none;border-radius:10px;padding:8px 14px;font-weight:bold;cursor:pointer}
-.btn{width:100%;padding:13px;background:linear-gradient(135deg,#ffcc00,#ffb300);border:none;border-radius:12px;font-size:17px;font-weight:bold;color:#0f2d5a;margin-top:10px;cursor:pointer}
-.btn-blue{background:linear-gradient(135deg,#0f3d2e,#1a6b4f);color:#fff}
-.pa{padding:8px 14px;border-radius:10px;border:none;font-weight:bold;cursor:pointer}
-.a-on{background:#f44336;color:#fff}
-.sess-box{width:100%;padding:14px;border-radius:14px;border:1.5px solid #ccc;font-size:16px;margin:6px 0;background:white;display:flex;justify-content:space-between;align-items:center;cursor:pointer;color:#333}
-.sess-panel{background:#fff;border-radius:18px;margin:6px 0;overflow:hidden;border:1px solid #eee;box-shadow:0 4px 14px rgba(0,0,0,.15)}
-.sess-panel-row{display:flex;align-items:center;gap:10px;padding:15px 16px;border-bottom:1px solid #eee;cursor:pointer}
-.sess-panel-row:last-child{border-bottom:none}
-.sess-panel-row.lbl{font-size:17px;white-space:nowrap;color:#111}
-.sess-panel-row input{flex:1;border:none;border-bottom:1.5px solid #ddd;font-size:17px;padding:4px 2px;outline:none;min-width:0;margin:0;border-radius:0}
-.sess-panel-row input:focus{border-bottom-color:#1a73e8}
-.radio{width:22px;height:22px;border:2px solid #888;border-radius:50%;flex-shrink:0;position:relative;cursor:pointer}
-.radio.on{border-color:#1a73e8}
-.radio.on::after{content:'';position:absolute;top:3px;left:3px;width:12px;height:12px;background:#1a73e8;border-radius:50%}
+.logo{width:120px;height:120px;border-radius:50%;border:4px solid #ffd700;margin-top:20px;object-fit:cover;background:#fff}
+.card{background:#fff;border-radius:18px;padding:18px;width:100%;max-width:420px;margin-top:16px}
+select,input{width:100%;padding:13px;border-radius:12px;border:1.5px solid #ccc;font-size:16px;margin:6px 0;background:#fff}
+label{font-weight:bold;font-size:14px}
+.btn{width:100%;padding:14px;border:none;border-radius:12px;font-size:17px;font-weight:bold;cursor:pointer;margin-top:8px}
+.btn-y{background:linear-gradient(135deg,#ffcc00,#ffb300);color:#0f2d5a}
+.btn-g{background:#16a34a;color:#fff}
+.btn-d{background:#0f3d2e;color:#fff}
+.btn-gray{background:#555;color:#fff}
+.row2{display:flex;gap:8px}.row2>div{flex:1}
+#addInstBox{display:none;border:2px dashed #16a34a;border-radius:12px;padding:12px;margin-top:10px}
 </style>
 </head>
 <body>
+<img class="logo" src="badge.jpg" onerror="this.onerror=null;this.src='logo.jpg'">
+<h2 style="margin:10px 0 0;color:#ffcc00">📋 ডিজিটাল হাজিরা</h2>
 
-<!-- ═══════════ 🖼️ ধাপ ১ শুরু: মনোগ্রাম 🖼️ ═══════════ -->
-<!-- ⚠️ ছবি বদলাতে এই START থেকে END পর্যন্ত ডিলিট করে নতুন কোড বসান -->
-<img class="badge" src="badge.jpg" alt="Malek Admission System" onerror="this.style.display='none'">
-<!-- ═══════════ 🖼️ ধাপ ১ শেষ ═══════════ -->
-
-<!-- ═══════════ 🏫 ধাপ ২ শুরু: প্রতিষ্ঠান তথ্য ও লগইন 🏫 ═══════════ -->
-<div id="home" class="page active">
-<button class="menu-btn" onclick="show('secAdd')">➕ প্রতিষ্ঠান যোগ করুন<small>লোগো, বাংলা-ইংরেজি নাম, EIIN, কোড, পাসওয়ার্ড</small></button>
-<button class="menu-btn" onclick="show('secTrade')">🎓 ট্রেড / সেশন / সেমিস্টার<small>১০টি ট্রেড, ৮টি সেশন, ৮টি সেমিস্টার</small></button>
-<button class="menu-btn" onclick="show('secLogin')">🔑 প্রতিষ্ঠান লগইন<small>কোড ও পাসওয়ার্ড দিয়ে প্রবেশ</small></button>
-<button class="menu-btn" onclick="adminGate()">🏫 প্রতিষ্ঠানের তালিকা দেখুন<small>শুধুমাত্র এডমিনের জন্য 🔒</small></button>
-<p id="selInfo" style="color:#ffcc00;font-size:13px;font-weight:bold;text-align:center;margin:12px 6px 0"></p>
+<div id="sessionBox" class="card" style="display:none;text-align:center">
+<div style="font-size:15px">👋 স্বাগতম</div>
+<h3 id="sessInst" style="margin:6px 0"></h3>
+<div id="sessClass" style="color:#0f3d2e;font-weight:bold;margin-bottom:10px"></div>
+<button class="btn btn-g" onclick="location.href='dashboard.html'">➜ ড্যাশবোর্ডে যান</button>
+<button class="btn btn-y" onclick="showLoginForm()">🔄 শ্রেণি বদলান</button>
+<button class="btn btn-gray" onclick="doLogout()">⬅️ লগআউট</button>
 </div>
 
-<div id="secAdd" class="page">
-<div class="topbar"><button onclick="show('home')">⬅ ফিরুন</button><h2 style="color:#fff;margin:0">➕ নতুন প্রতিষ্ঠান</h2><span></span></div>
-<div class="card">
-<div style="border:2px solid #ffcc00;border-radius:22px;padding:18px;margin-bottom:12px">
-<div style="display:flex;gap:14px;align-items:center">
-<div style="text-align:center;min-width:90px">
-<label for="npLogoInp" style="cursor:pointer;display:block">
-<img id="npLogo" src="data:image/gif;base64,[STRIPPED]" style="width:80px;height:80px;border-radius:50%;border:5px solid #ffcc00;object-fit:cover;background:#f5f5f5;display:block;margin:0 auto">
-<div style="color:#1a3aed;font-weight:bold;margin-top:6px;font-size:14px">লোগো চেঞ্জ</div></label>
-<input type="file" id="npLogoInp" accept="image/*" onchange="npLogoChg(this)" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+<div id="loginBox" class="card" style="display:none">
+<label>🏫 প্রতিষ্ঠান</label>
+<select id="l_inst"></select>
+<button class="btn btn-d" onclick="toggleAddInst()" style="font-size:14px;padding:10px">➕ নতুন প্রতিষ্ঠান যোগ করুন</button>
+<div id="addInstBox">
+<input id="ni_bn" placeholder="প্রতিষ্ঠানের বাংলা নাম">
+<input id="ni_en" placeholder="English Name">
+<div class="row2"><div><input id="ni_eiin" placeholder="EIIN" style="margin:6px 0"></div><div><input id="ni_code" placeholder="Code" style="margin:6px 0"></div></div>
+<input id="ni_pass" type="password" placeholder="পাসওয়ার্ড সেট করুন">
+<button class="btn btn-g" onclick="saveNewInst()">✔️ সেভ করুন</button>
 </div>
-<div style="flex:1">
-<input id="npBn" placeholder="বাংলা নাম" style="text-align:center;font-weight:bold">
-<input id="npEn" placeholder="English Name" style="text-align:center">
-<div style="display:flex;gap:8px">
-<input id="npEi" placeholder="EIIN" style="text-align:center;margin:0">
-<input id="npCd" placeholder="Code" style="text-align:center;margin:0">
-</div></div></div></div>
-<label style="font-weight:bold">🔑 পাসওয়ার্ড</label><input id="npPass" type="password" placeholder="পাসওয়ার্ড দিন">
-<button class="btn btn-blue" onclick="saveNewInst()">সেভ করুন ✔️</button>
-</div></div>
-
-<div id="secTrade" class="page">
-<div class="topbar"><button onclick="show('home')">⬅ ফিরুন</button><h2 style="color:#fff;margin:0">🎓 ট্রেড সিলেক্ট</h2><span></span></div>
-<div class="card" style="border:3px solid #ffcc00">
-<label style="font-weight:bold">🔧 ট্রেডের নাম (১০টি)</label><select id="s_trade"></select>
-<label style="font-weight:bold">📅 সেশন</label>
-<div class="sess-box" onclick="toggleSessPanel()"><span id="sessBoxText">সেশন সিলেক্ট করুন</span><span style="font-size:12px;color:#888">▼</span></div>
-<div id="sessPanel" class="sess-panel" style="display:none">
-<div class="sess-panel-row" onclick="clearSessSel()"><span class="lbl">সেশন সিলেক্ট করুন</span><span style="flex:1"></span><span class="radio"></span></div>
-<div id="sessPanelRows"></div>
+<label>🎓 ট্রেড / বিভাগ</label>
+<select id="l_trade"><option>কম্পিউটার টেকনোলজি</option><option>ইলেকট্রিক্যাল টেকনোলজি</option><option>সিভিল টেকনোলজি</option><option>মেকানিক্যাল টেকনোলজি</option></select>
+<div class="row2">
+<div><label>📅 সেশন</label><select id="l_sess"><option>2025-26</option><option>2024-25</option><option>2026-27</option></select></div>
+<div><label>📚 সেমিস্টার</label><select id="l_sem"><option>০১</option><option selected>০২</option><option>০৩</option><option>০৪</option><option>০৫</option><option>০৬</option><option>০৭</option><option>০৮</option></select></div>
 </div>
-<p style="font-size:12px;color:#555;margin:2px 0 4px">ℹ️ উপরে চাপ দিলে তালিকা খুলবে — প্রতিটি লাইনে সংখ্যা লিখুন, একবার লিখলেই অটো সেভ হবে ⚡</p>
-<label style="font-weight:bold">📚 সেমিস্টার (৮টি)</label><select id="s_sem"></select>
-<button class="btn btn-blue" onclick="saveSel()">✅ নিশ্চিত করুন</button>
-</div></div>
-
-<div id="secLogin" class="page">
-<div class="topbar"><button onclick="show('home')">⬅ ফিরুন</button><span></span><span></span></div>
-<div class="card" style="text-align:center;border:3px solid #ffcc00">
-<div style="font-size:50px">🔐</div><h2>প্রতিষ্ঠান লগইন</h2>
-<label style="text-align:left;font-weight:bold">🏫 প্রতিষ্ঠান কোড</label><input id="l_code" placeholder="যেমন: 50018">
-<label style="text-align:left;font-weight:bold">🔑 পাসওয়ার্ড</label><input id="l_pass" type="password" placeholder="পাসওয়ার্ড দিন">
-<p style="font-size:13px;color:#555">ℹ️ আগে ট্রেড/সেশন/সেমিস্টার সিলেক্ট করুন</p>
-<button class="btn" onclick="teacherLogin()">প্রবেশ করুন ➜</button>
-<p id="l_msg" style="color:red;font-size:14px;margin-top:8px"></p>
-</div></div>
-
-<div id="secList" class="page">
-<div class="topbar"><button onclick="show('home')">⬅ ফিরুন</button><h2 style="color:#fff;margin:0">🏫 তালিকা</h2><span></span></div>
-<div class="card"><div id="instList"></div></div>
+<label>🔑 প্রতিষ্ঠান কোড</label><input id="l_code" placeholder="যেমন: 50018">
+<label>🔑 পাসওয়ার্ড</label><input id="l_pass" type="password" placeholder="পাসওয়ার্ড দিন">
+<button class="btn btn-y" onclick="teacherLogin()">প্রবেশ করুন ➜</button>
+<p id="l_msg" style="color:red;font-size:14px"></p>
 </div>
-<!-- ═══════════ 🏫 ধাপ ২ শেষ ═══════════ -->
 
 <script>
-function show(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
-let users=JSON.parse(localStorage.getItem('takrim_users')||'{}');
 let insts=JSON.parse(localStorage.getItem('takrim_insts')||'[]');
-const TRADES=['কম্পিউটার টেকনোলজি','ইলেকট্রিক্যাল টেকনোলজি','মেকানিক্যাল টেকনোলজি','সিভিল টেকনোলজি','অটোমোবাইল টেকনোলজি','ইলেকট্রনিক্স টেকনোলজি','গার্মেন্টস ডিজাইন','রেফ্রিজারেশন ও এয়ারকন্ডিশন','ওয়েল্ডিং ও ফেব্রিকেশন','প্লাম্বিং ও পাইপ ফিটিং'];
-const SEMS=['০১','০২','০৩','০৪','০৫','০৬','০৭','০৮'];
-s_trade.innerHTML='<option value="">ট্রেড সিলেক্ট করুন</option>'+TRADES.map(t=>'<option value="'+t+'">'+t+'</option>').join('');
-s_sem.innerHTML='<option value="">সেমিস্টার সিলেক্ট করুন</option>'+SEMS.map(s=>'<option value="'+s+'">সেমিস্টার '+s+'</option>').join('');
-let sessSelIdx=-1;
-function getStoredSessions(){try{return JSON.parse(localStorage.getItem('takrim_sessions')||'[]');}catch(e){return[];}}
-function getSessionAll(){return Array.from(document.querySelectorAll('.sess_inp')).map(x=>x.value.trim());}
-function getSessionVals(){return getSessionAll().filter(x=>x);}
-function buildSessPanel(){let saved=getStoredSessions();let h='';
-for(let i=0;i<8;i++){let v=String(saved[i]||'').replace(/"/g,'&quot;');
-h+='<div class="sess-panel-row" onclick="pickSessRow('+i+')"><span class="lbl">সেশন</span><input class="sess_inp" value="'+v+'" placeholder="____" onclick="event.stopPropagation()" oninput="sessTyped('+i+')"><span class="radio" id="sradio_'+i+'"></span></div>';}
-document.getElementById('sessPanelRows').innerHTML=h;}
-function sessTyped(i){localStorage.setItem('takrim_sessions',JSON.stringify(getSessionAll()));
-if(sessSelIdx===i&&!getSessionAll()[i]){sessSelIdx=-1;}
-paintSessRadios();updateSessBox();}
-function paintSessRadios(){for(let i=0;i<8;i++){let r=document.getElementById('sradio_'+i);if(r)r.className='radio'+(i===sessSelIdx?' on':'');}}
-function updateSessBox(){let all=getSessionAll();
-document.getElementById('sessBoxText').textContent=(sessSelIdx>=0&&all[sessSelIdx])?('সেশন '+all[sessSelIdx]):'সেশন সিলেক্ট করুন';}
-function toggleSessPanel(){let p=document.getElementById('sessPanel');p.style.display=(p.style.display==='none')?'block':'none';}
-function pickSessRow(i){if(!getSessionAll()[i]){alert('আগে এই লাইনে সেশন সংখ্যা লিখুন');return;}
-sessSelIdx=i;paintSessRadios();updateSessBox();document.getElementById('sessPanel').style.display='none';}
-function clearSessSel(){sessSelIdx=-1;paintSessRadios();updateSessBox();}
-buildSessPanel();
-function getSel(){return JSON.parse(localStorage.getItem('takrim_sel')||'{}');}
-function saveSel(){if(!s_trade.value){alert('ট্রেড সিলেক্ট করুন');return;}
-let all=getSessionAll();let vals=all.filter(x=>x);
-if(!vals.length){alert('সেশন সংখ্যা লিখুন');document.getElementById('sessPanel').style.display='block';return;}
-let selVal=(sessSelIdx>=0&&all[sessSelIdx])?all[sessSelIdx]:vals[0];
-if(!s_sem.value){alert('সেমিস্টার সিলেক্ট করুন');return;}
-localStorage.setItem('takrim_sessions',JSON.stringify(all));
-localStorage.setItem('takrim_sel',JSON.stringify({t:s_trade.value,s:selVal,sm:s_sem.value}));updateSelInfo();alert('✔️ সিলেক্ট হয়েছে');show('home');}
-function updateSelInfo(){let sel=getSel();selInfo.textContent=sel.t?('✅ '+sel.t+' | সেশন '+sel.s+' | সেমিস্টার '+sel.sm):'';
-if(sel.t){s_trade.value=sel.t;s_sem.value=sel.sm;sessSelIdx=getSessionAll().indexOf(sel.s);paintSessRadios();updateSessBox();}}
-let npLogoData='';
-function npLogoChg(inp){let f=inp.files[0];if(!f)return;let r=new FileReader();r.onload=e=>{npLogoData=e.target.result;document.getElementById('npLogo').src=e.target.result;};r.readAsDataURL(f);}
-function saveNewInst(){let bn=npBn.value.trim();if(!bn){alert('প্রতিষ্ঠানের নাম দিন');return;}
-insts.push({name:bn,en:npEn.value.trim(),eiin:npEi.value.trim(),code:npCd.value.trim(),logo:npLogoData,pass:npPass.value});
+let users=JSON.parse(localStorage.getItem('takrim_users')||'{}');
+if(!insts.length){
+insts=[{name:'প্রতিষ্ঠানের নাম',en:'',eiin:'',code:'50018',logo:'',pass:'1234'}];
+users['50018']='1234';
 localStorage.setItem('takrim_insts',JSON.stringify(insts));
-if(npCd.value.trim()&&npPass.value){users[npCd.value.trim()]=npPass.value;localStorage.setItem('takrim_users',JSON.stringify(users));}
-npBn.value='';npEn.value='';npEi.value='';npCd.value='';npPass.value='';npLogoData='';npLogo.src='data:image/gif;base64,[STRIPPED]';
-alert('✔️ প্রতিষ্ঠান যোগ হয়েছে');show('home');}
-function teacherLogin(){let c=l_code.value.trim(),p=l_pass.value;
-if(!c||!p){l_msg.textContent='কোড ও পাসওয়ার্ড দিন';return;}
-let sel=getSel();
-if(!sel.t){l_msg.textContent='⚠️ আগে ট্রেড/সেশন/সেমিস্টার সিলেক্ট করুন';setTimeout(()=>show('secTrade'),900);return;}
-let i=insts.findIndex(s=>((s.code||'').trim()===c));
-let ok=(users[c]&&users[c]===p);if(!ok&&i>=0&&(insts[i].pass||'')===p)ok=true;
-if(!ok){l_msg.textContent='❌ ভুল কোড বা পাসওয়ার্ড!';return;}
-let s=insts[i>=0?i:0]||{};
-localStorage.setItem('collegeInfo',JSON.stringify({nameBn:s.name||'',nameEn:s.en||'',eiin:s.eiin||'',ins:s.code||'',logo:s.logo||''}));
-localStorage.setItem('takrim_inst_code',c);
-localStorage.setItem('takrim_current',sel.t+' | সেশন '+sel.s+' | সেমিস্টার '+sel.sm);
-location.href='dashboard.html';}
-function adminGate(){
-if(prompt('🔐 এডমিন আইডি দিন')!=='malek'){alert('❌ অনুমতি নেই!');return;}
-if(prompt('🔑 এডমিন পাসওয়ার্ড দিন')!=='malek1980'){alert('❌ ভুল পাসওয়ার্ড!');return;}
-openListScr();}
-function openListScr(){show('secList');let seen={},uniq=[];
-insts.forEach((s,i)=>{let k=(s.eiin&&s.eiin.trim()?s.eiin.trim():'')||(s.name||'').trim().toLowerCase();if(!seen[k]){seen[k]=1;uniq.push(i);}});
-instList.innerHTML=uniq.length?uniq.map(i=>{let s=insts[i];
-return '<div class="card" style="display:flex;align-items:center;gap:10px;padding:10px;margin:0 0 10px">'+(s.logo?'<img src="'+s.logo+'" style="width:45px;height:45px;border-radius:50%;object-fit:cover">':'🏫')+'<div style="flex:1"><b>'+s.name+'</b><br><small>EIIN: '+(s.eiin||'-')+' | Code: '+(s.code||'-')+'<br>🔑 পাসওয়ার্ড: <span id="pw_'+i+'" style="font-weight:bold;color:#0f2d5a">'+(s.pass||'-')+'</span> <button class="pa" style="padding:2px 8px;font-size:14px" onclick="togglePw('+i+')">👁️</button></small></div><button class="pa a-on" style="font-size:18px" onclick="delInst('+i+')">🗑️</button></div>';}).join(''):'<p style="text-align:center;color:#888">এখনো কোনো প্রতিষ্ঠান নেই</p>';}
-function togglePw(i){let el=document.getElementById('pw_'+i);if(el.dataset.hide==='1'){el.textContent=insts[i].pass||'-';el.dataset.hide='';}else{el.dataset.hide='1';el.textContent='••••••';}}
-function delInst(idx){if(!confirm('এই প্রতিষ্ঠান ডিলিট করবেন?'))return;let s=insts[idx];
-if(s.code&&users[s.code]){delete users[s.code];localStorage.setItem('takrim_users',JSON.stringify(users));}
-insts.splice(idx,1);localStorage.setItem('takrim_insts',JSON.stringify(insts));alert('✔️ প্রতিষ্ঠান ডিলিট হয়েছে');openListScr();}
-updateSelInfo();
+localStorage.setItem('takrim_users',JSON.stringify(users));
+}
+function fillInst(){l_inst.innerHTML=insts.map((s,i)=>'<option value="'+i+'">'+s.name+'</option>').join('');}
+function toggleAddInst(){let b=document.getElementById('addInstBox');b.style.display=b.style.display==='block'?'none':'block';}
+function saveNewInst(){let bn=ni_bn.value.trim();if(!bn)return alert('নাম দিন');insts.push({name:bn,en:ni_en.value.trim(),eiin:ni_eiin.value.trim(),code:ni_code.value.trim(),logo:'',pass:ni_pass.value});if(ni_code.value.trim()&&ni_pass.value)users[ni_code.value.trim()]=ni_pass.value;localStorage.setItem('takrim_insts',JSON.stringify(insts));localStorage.setItem('takrim_users',JSON.stringify(users));ni_bn.value='';ni_en.value='';ni_eiin.value='';ni_code.value='';ni_pass.value='';fillInst();toggleAddInst();alert('✔️ প্রতিষ্ঠান যোগ হয়েছে');}
+function showLoginForm(){sessionBox.style.display='none';loginBox.style.display='block';}
+function doLogout(){localStorage.removeItem('takrim_session');location.reload();}
+function teacherLogin(){let s=insts[+l_inst.value]||{};let code=l_code.value.trim(),pass=l_pass.value;if(!code||!pass){l_msg.textContent='কোড ও পাসওয়ার্ড দিন';return;}let ok=(users[code]&&users[code]===pass)||((s.code||'')===code&&(s.pass||'')===pass);if(!ok){l_msg.textContent='❌ ভুল কোড বা পাসওয়ার্ড!';return;}let cls=l_trade.value+' | সেশন '+l_sess.value+' | সেমিস্টার '+l_sem.value;localStorage.setItem('collegeInfo',JSON.stringify({nameBn:s.name||'',nameEn:s.en||'',eiin:s.eiin||'',ins:s.code||'',logo:s.logo||''}));localStorage.setItem('takrim_current',cls);localStorage.setItem('takrim_current_class',cls);localStorage.setItem('takrim_session','1');location.href='dashboard.html';}
+fillInst();
+if(localStorage.getItem('takrim_session')==='1'){let info=JSON.parse(localStorage.getItem('collegeInfo')||'{}');sessInst.innerText=info.nameBn||'প্রতিষ্ঠান';sessClass.innerText='শ্রেণী: '+(localStorage.getItem('takrim_current_class')||'');sessionBox.style.display='block';}
+else{loginBox.style.display='block';}
 </script>
 </body>
 </html>
