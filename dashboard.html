@@ -44,7 +44,10 @@ input{width:100%;padding:14px;border-radius:14px;border:1.5px solid #ccc;font-si
 <!-- ═══════════ 📊 ধাপ ৩ শেষ ═══════════ -->
 
 <script>
-let currentClass=localStorage.getItem('takrim_class')||"";
+/* ✅ ডাবল সুরক্ষা: takrim_current না পেলে takrim_sel থেকে বানাবে */
+let currentClass=localStorage.getItem('takrim_current')||"";
+if(!currentClass){try{let s=JSON.parse(localStorage.getItem('takrim_sel')||'{}');
+if(s.t)currentClass=s.t+' | সেশন '+s.s+' | সেমিস্টার '+s.sm;}catch(e){}}
 let students=[],attendance={},attMonthly={},results={};
 let subNames=["বিষয় 1","বিষয় 2","বিষয় 3","বিষয় 4","বিষয় 5","বিষয় 6","বিষয় 7","বিষয় 8","বিষয় 9","বিষয় 10","বিষয় 11","বিষয় 12","বিষয় 13"];
 function key(n){return n+'_'+currentClass;}
@@ -61,9 +64,23 @@ localStorage.setItem(key('attMonthly'),JSON.stringify(attMonthly));
 localStorage.setItem(key('results'),JSON.stringify(results));
 localStorage.setItem(key('subNames'),JSON.stringify(subNames));}
 function getMonthInfo(){let d=new Date();let y=d.getFullYear(),m=d.getMonth();return{monthName:d.toLocaleString('bn-BD',{month:'long',year:'numeric'}),days:new Date(y,m+1,0).getDate(),key:y+'-'+m,today:d.getDate()};}
+function getCollegeInfo(){
+let info={};try{info=JSON.parse(localStorage.getItem('collegeInfo')||'{}');}catch(e){}
+if(!info.nameBn){try{
+let insts=JSON.parse(localStorage.getItem('takrim_insts')||'[]');
+let code=localStorage.getItem('takrim_inst_code')||'';
+let f=insts.find(s=>((s.code||'').trim())===code.trim());
+if(f)info={nameBn:f.name||'',nameEn:f.en||'',eiin:f.eiin||'',ins:f.code||'',logo:f.logo||''};
+}catch(e){}}
+return info;}
 function saveBox(){let info={nameBn:boxNameBn.innerText.trim(),nameEn:boxNameEn.innerText.trim(),eiin:boxEIIN.innerText.trim(),ins:boxIns.innerText.trim(),logo:boxLogo.src};localStorage.setItem('collegeInfo',JSON.stringify(info));boxStatus.innerText="✅ সেভ হয়েছে";setTimeout(()=>boxStatus.innerText="",1200);}
 function changeBoxLogo(i){let f=i.files[0];if(!f)return;let r=new FileReader();r.onload=e=>{boxLogo.src=e.target.result;saveBox();};r.readAsDataURL(f);}
-function loadBox(){let info=JSON.parse(localStorage.getItem('collegeInfo')||'{}');if(info.nameBn)boxNameBn.innerText=info.nameBn;if(info.nameEn)boxNameEn.innerText=info.nameEn;if(info.eiin)boxEIIN.innerText=info.eiin;if(info.ins)boxIns.innerText=info.ins;if(info.logo)boxLogo.src=info.logo;}
+function loadBox(){let info=getCollegeInfo();
+if(info.nameBn)boxNameBn.innerText=info.nameBn;
+if(info.nameEn)boxNameEn.innerText=info.nameEn;
+if(info.eiin)boxEIIN.innerText=info.eiin;
+if(info.ins)boxIns.innerText=info.ins;
+if(info.logo)boxLogo.src=info.logo;}
 function fixDateBug(){let t=new Date().toDateString();if(localStorage.getItem('takrim_lastdate')!==t){localStorage.setItem('takrim_lastdate',t);}}
 function toggleMonthlyFirst(){let d=document.getElementById('monthlyDivFirst');
 if(d.style.display=='block'){d.style.display='none';return;}
@@ -77,8 +94,8 @@ for(let day=1;day<=mi.days;day++){let v=(attMonthly[mk]&&attMonthly[mk][i]&&attM
 h+='<td style="padding:4px;text-align:center;'+(v=='P'?'color:green;font-weight:bold':v=='A'?'color:red;font-weight:bold':'')+'">'+v+'</td>';}
 h+='</tr>';});
 h+='</table>';d.innerHTML=h;}
-function buildMsg(t){let info=JSON.parse(localStorage.getItem('collegeInfo')||'{}');
-let hd='🏫 '+(info.nameBn||'')+'\n🎓 শ্রেণি: '+currentClass+'\n';
+function buildMsg(t){let info=getCollegeInfo();
+let hd='🏫 '+(info.nameBn||'')+'\n🎓 '+currentClass+'\n';
 if(t=='present'){let n=0;students.forEach((_,i)=>{if(attendance[i]!=='absent')n++;});return hd+'✅ আজ উপস্থিত: '+n+' জন';}
 if(t=='absent'){let ab=students.filter((s,i)=>attendance[i]=='absent');return hd+'❌ আজ অনুপস্থিত: '+ab.length+' জন\n'+ab.map(s=>'• '+s.name+' (রোল: '+(s.roll||'-')+')').join('\n');}
 return hd+'📢 নোটিশ: '+(document.getElementById('noticeText').value||'');}
@@ -88,8 +105,8 @@ location.href='sms:'+nums+'?body='+encodeURIComponent(buildMsg(t));}
 function sendWA(t){window.open('https://wa.me/?text='+encodeURIComponent(buildMsg(t)),'_blank');}
 function shareReport(){let mi=getMonthInfo(),p=0;
 students.forEach((_,i)=>{if(attendance[i]!=='absent')p++;});
-let info=JSON.parse(localStorage.getItem('collegeInfo')||'{}');
-let msg='📊 হাজিরা রিপোর্ট\n🏫 '+(info.nameBn||'')+'\n🎓 শ্রেণি: '+currentClass+'\n📅 '+mi.today+' '+mi.monthName+'\n✅ উপস্থিত: '+p+'\n❌ অনুপস্থিত: '+(students.length-p)+'\n👥 মোট: '+students.length;
+let info=getCollegeInfo();
+let msg='📊 হাজিরা রিপোর্ট\n🏫 '+(info.nameBn||'')+'\n🎓 '+currentClass+'\n📅 '+mi.today+' '+mi.monthName+'\n✅ উপস্থিত: '+p+'\n❌ অনুপস্থিত: '+(students.length-p)+'\n👥 মোট: '+students.length;
 window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');}
 showClass.innerText=currentClass;loadClassData();loadBox();fixDateBug();
 </script>
