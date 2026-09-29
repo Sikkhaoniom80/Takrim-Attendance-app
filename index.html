@@ -21,6 +21,9 @@ select,input{width:100%;padding:13px;border-radius:12px;border:1.5px solid #ccc;
 .btn-gray{background:#ddd;color:#111}
 label{font-weight:bold;font-size:14px}
 .row2{display:flex;gap:8px}.row2>div{flex:1}
+.ses-row{display:flex;align-items:center;gap:8px;margin:4px 0}
+.ses-row input[type=radio]{width:22px;height:22px;flex-shrink:0;margin:0}
+.ses-row input[type=text]{flex:1;margin:0}
 </style>
 </head>
 <body>
@@ -48,8 +51,13 @@ label{font-weight:bold;font-size:14px}
 <div id="tssPage" class="card">
 <h3 style="text-align:center">🎓 ট্রেড / সেশন / সেমিস্টার</h3>
 <label>ট্রেড</label><select id="t_trade"></select>
-<div class="row2"><div><label>সেশন</label><select id="t_sess"></select></div><div><label>সেমিস্টার</label><select id="t_sem"></select></div></div>
+<label>সেমিস্টার</label><select id="t_sem"></select>
 <button class="btn btn-y" onclick="saveTSS()">✔️ সেভ করুন</button>
+<hr style="margin:14px 0">
+<label>সেশন (৮টি)</label>
+<p style="font-size:12px;color:#666;margin:4px 0">✏️ সংখ্যা লিখে সেভ করুন, একটায় ক্লিক করলেই সিলেক্ট হবে — পরেরবার আর ক্লিক লাগবে না</p>
+<div id="sessInputs"></div>
+<button class="btn btn-g" onclick="saveSessNames()">💾 সেশনের নাম সেভ করুন</button>
 <button class="btn btn-gray" onclick="show('homePage')">⬅️ হোম</button>
 </div>
 
@@ -65,7 +73,8 @@ label{font-weight:bold;font-size:14px}
 
 <div id="instListPage" class="card">
 <h3 style="text-align:center">🏫 প্রতিষ্ঠানের তালিকা</h3>
-<input id="adminPass" type="password" placeholder="অ্যাডমিন পাসওয়ার্ড (admin123)">
+<label>🔐 এডমিন আইডি</label><input id="adminId" placeholder="এডমিন আইডি দিন">
+<label>🔐 এডমিন পাসওয়ার্ড</label><input id="adminPass" type="password" placeholder="এডমিন পাসওয়ার্ড দিন">
 <button class="btn btn-y" onclick="adminGate()">দেখুন</button>
 <div id="instTable"></div>
 <button class="btn btn-gray" onclick="show('homePage')">⬅️ হোম</button>
@@ -75,16 +84,42 @@ label{font-weight:bold;font-size:14px}
 let insts=JSON.parse(localStorage.getItem('takrim_insts')||'[]');
 let users=JSON.parse(localStorage.getItem('takrim_users')||'{}');
 const TRADES=["কম্পিউটার টেকনোলজি","ইলেকট্রিক্যাল টেকনোলজি","সিভিল টেকনোলজি","মেকানিক্যাল টেকনোলজি","ইলেকট্রনিক্স টেকনোলজি","পাওয়ার টেকনোলজি","টেক্সটাইল টেকনোলজি","গার্মেন্টস টেকনোলজি","ফুড টেকনোলজি","অটোমোবাইল টেকনোলজি"];
-const SESS=["2025-26","2024-25","2023-24","2022-23","2026-27","2027-28","2028-29","2029-30"];
+const SESS_DEF=["2025-26","2024-25","2023-24","2022-23","2026-27","2027-28","2028-29","2029-30"];
 const SEMS=["০১","০২","০৩","০৪","০৫","০৬","০৭","০৮"];
+
+/* ===== 🎓 সেশন: ৮টা এডিটেবল + অটো মনে রাখা ===== */
+let sessList=JSON.parse(localStorage.getItem('takrim_sess_list')||'null')||SESS_DEF.slice();
+while(sessList.length<8)sessList.push('');
+function renderSessInputs(){
+let sel=localStorage.getItem('takrim_sess')||'';
+document.getElementById('sessInputs').innerHTML=sessList.map((s,i)=>
+'<div class="ses-row"><input type="radio" name="sesspick" '+((sel&&sel===s)?'checked':'')+' onclick="pickSess('+i+')"><b>সেশন</b><input type="text" id="sess_'+i+'" value="'+s+'" placeholder="যেমন: 2025-26"></div>'
+).join('');}
+function saveSessNames(){
+for(let i=0;i<8;i++){sessList[i]=document.getElementById('sess_'+i).value.trim();}
+localStorage.setItem('takrim_sess_list',JSON.stringify(sessList));
+alert('✔️ সেশনের নাম সেভ হয়েছে!');renderSessInputs();}
+function pickSess(i){
+let v=document.getElementById('sess_'+i).value.trim();
+if(!v)return alert('আগে সেশনের নাম লিখুন!');
+sessList[i]=v;localStorage.setItem('takrim_sess_list',JSON.stringify(sessList));
+localStorage.setItem('takrim_sess',v);
+alert('✔️ সেশন সিলেক্ট হয়েছে: '+v+'\nপরেরবার আর ক্লিক করা লাগবে না');renderSessInputs();}
+
 function show(id){document.querySelectorAll('.card').forEach(c=>c.classList.remove('active'));document.getElementById('homePage').style.display=id=='homePage'?'block':'none';if(id!='homePage')document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
 function npLogoChg(i){let r=new FileReader();r.onload=e=>npLogo.src=e.target.result;r.readAsDataURL(i.files[0]);}
 function saveNewInst(){let bn=npBn.value.trim(),cd=npCd.value.trim(),pw=npPass.value;if(!bn||!cd||!pw)return alert('নাম, কোড ও পাসওয়ার্ড দিন!');if(insts.find(x=>x.code==cd))return alert('এই কোডে প্রতিষ্ঠান আছে!');insts.push({name:bn,en:npEn.value.trim(),eiin:npEi.value.trim(),code:cd,logo:npLogo.src,pass:pw});users[cd]=pw;localStorage.setItem('takrim_insts',JSON.stringify(insts));localStorage.setItem('takrim_users',JSON.stringify(users));npBn.value=npEn.value=npEi.value=npCd.value=npPass.value='';npLogo.src='https://via.placeholder.com/100';fillInst();alert('✔️ সেভ হয়েছে!');show('homePage');}
 function fillInst(){l_inst.innerHTML=insts.map((s,i)=>'<option value="'+i+'">'+s.name+'</option>').join('');}
-function fillTSS(){t_trade.innerHTML=TRADES.map(t=>'<option'+(localStorage.getItem('takrim_trade')==t?' selected':'')+'>'+t+'</option>').join('');t_sess.innerHTML=SESS.map(t=>'<option'+(localStorage.getItem('takrim_sess')==t?' selected':'')+'>'+t+'</option>').join('');t_sem.innerHTML=SEMS.map(t=>'<option'+(localStorage.getItem('takrim_sem')==t?' selected':'')+'>'+t+'</option>').join('');}
-function saveTSS(){localStorage.setItem('takrim_trade',t_trade.value);localStorage.setItem('takrim_sess',t_sess.value);localStorage.setItem('takrim_sem',t_sem.value);alert('✔️ সেভ হয়েছে!');show('homePage');}
-function teacherLogin(){let s=insts[+l_inst.value];let cd=l_code.value.trim(),pw=l_pass.value;let ok=(s&&s.code==cd&&s.pass==pw)||(users[cd]&&users[cd]==pw);if(!ok){l_msg.innerText='❌ ভুল কোড বা পাসওয়ার্ড!';return;}let cls=(localStorage.getItem('takrim_trade')||TRADES[0])+' | সেশন '+(localStorage.getItem('takrim_sess')||SESS[0])+' | সেমিস্টার '+(localStorage.getItem('takrim_sem')||SEMS[0]);localStorage.setItem('collegeInfo',JSON.stringify({nameBn:s?s.name:'',nameEn:s?s.en:'',eiin:s?s.eiin:'',ins:s?s.code:'',logo:s?s.logo:''}));localStorage.setItem('takrim_current',cls);localStorage.setItem('takrim_current_class',cls);localStorage.setItem('takrim_session','1');location.href='dashboard.html';}
-function adminGate(){if(adminPass.value!=='admin123')return alert('ভুল পাসওয়ার্ড!');openListScr();}
+function fillTSS(){t_trade.innerHTML=TRADES.map(t=>'<option'+(localStorage.getItem('takrim_trade')==t?' selected':'')+'>'+t+'</option>').join('');t_sem.innerHTML=SEMS.map(t=>'<option'+(localStorage.getItem('takrim_sem')==t?' selected':'')+'>'+t+'</option>').join('');renderSessInputs();}
+function saveTSS(){localStorage.setItem('takrim_trade',t_trade.value);localStorage.setItem('takrim_sem',t_sem.value);alert('✔️ সেভ হয়েছে!');show('homePage');}
+function teacherLogin(){let s=insts[+l_inst.value];let cd=l_code.value.trim(),pw=l_pass.value;let ok=(s&&s.code==cd&&s.pass==pw)||(users[cd]&&users[cd]==pw);if(!ok){l_msg.innerText='❌ ভুল কোড বা পাসওয়ার্ড!';return;}let cls=(localStorage.getItem('takrim_trade')||TRADES[0])+' | সেশন '+(localStorage.getItem('takrim_sess')||sessList[0]||'')+' | সেমিস্টার '+(localStorage.getItem('takrim_sem')||SEMS[0]);localStorage.setItem('collegeInfo',JSON.stringify({nameBn:s?s.name:'',nameEn:s?s.en:'',eiin:s?s.eiin:'',ins:s?s.code:'',logo:s?s.logo:''}));localStorage.setItem('takrim_current',cls);localStorage.setItem('takrim_current_class',cls);localStorage.setItem('takrim_session','1');location.href='dashboard.html';}
+
+/* ===== 🔐 আগে এডমিন আইডি, তারপর পাসওয়ার্ড ===== */
+function adminGate(){
+let ap=localStorage.getItem('takrim_admin_pass')||'admin123';
+if(adminId.value.trim()!=='takrim')return alert('❌ ভুল এডমিন আইডি!');
+if(adminPass.value!==ap)return alert('❌ ভুল পাসওয়ার্ড!');
+adminPass.value='';openListScr();}
 function openListScr(){let h='<table style="width:100%;border-collapse:collapse;font-size:13px;margin-top:10px"><tr style="background:#0f3d2e;color:#fff"><th style="padding:8px;border:1px solid #ccc">নাম</th><th style="padding:8px;border:1px solid #ccc">কোড</th><th style="padding:8px;border:1px solid #ccc">পাসওয়ার্ড</th><th style="padding:8px;border:1px solid #ccc">🗑️</th></tr>';insts.forEach((s,i)=>{h+='<tr><td style="padding:8px;border:1px solid #ccc">'+s.name+'</td><td style="padding:8px;border:1px solid #ccc">'+s.code+'</td><td style="padding:8px;border:1px solid #ccc"><span>•••••• </span><button onclick="togglePw('+i+',this)" style="border:none;background:#eee;border-radius:6px;cursor:pointer">👁️</button></td><td style="padding:8px;border:1px solid #ccc;text-align:center"><button onclick="delInst('+i+')" style="border:none;background:#fee2e2;border-radius:6px;cursor:pointer">🗑️</button></td></tr>';});h+='</table>';instTable.innerHTML=h;}
 function togglePw(i,btn){let sp=btn.parentElement.querySelector('span');sp.textContent=sp.textContent.trim()=='••••••'?insts[i].pass+' ':'•••••• ';}
 function delInst(i){if(!confirm('ডিলিট করবেন?'))return;let cd=insts[i].code;insts.splice(i,1);delete users[cd];localStorage.setItem('takrim_insts',JSON.stringify(insts));localStorage.setItem('takrim_users',JSON.stringify(users));fillInst();openListScr();}
