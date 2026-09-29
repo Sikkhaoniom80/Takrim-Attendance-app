@@ -87,9 +87,18 @@ label{font-weight:bold;font-size:14px}
 
 <div id="instListPage" class="card">
 <h3 style="text-align:center">🏫 প্রতিষ্ঠানের তালিকা</h3>
+
+<div id="adminIdBox">
 <label>🔐 এডমিন আইডি</label><input id="adminId" placeholder="এডমিন আইডি দিন">
+<button class="btn btn-y" onclick="adminStep1()">পরবর্তী ➜</button>
+</div>
+
+<div id="adminPwBox" style="display:none">
 <label>🔐 এডমিন পাসওয়ার্ড</label><input id="adminPass" type="password" placeholder="এডমিন পাসওয়ার্ড দিন">
-<button class="btn btn-y" onclick="adminGate()">দেখুন</button>
+<button class="btn btn-y" onclick="adminStep2()">OK ✔️</button>
+</div>
+
+<div style="text-align:center;margin-top:8px"><a href="#" onclick="resetAdminPw();return false;" style="font-size:13px;color:#666">🔄 পাসওয়ার্ড ভুলে গেছেন? রিসেট করুন</a></div>
 <div id="instTable"></div>
 <button class="btn btn-gray" onclick="show('homePage')">⬅️ হোম</button>
 </div>
@@ -97,6 +106,11 @@ label{font-weight:bold;font-size:14px}
 <script>
 let insts=JSON.parse(localStorage.getItem('takrim_insts')||'[]');
 let users=JSON.parse(localStorage.getItem('takrim_users')||'{}');
+/* ===== 🔐 এডমিন: malek / malek1980 (একবারই সেট হবে) ===== */
+if(!localStorage.getItem('takrim_admin_v2')){
+localStorage.setItem('takrim_admin_id','malek');
+localStorage.setItem('takrim_admin_pass','malek1980');
+localStorage.setItem('takrim_admin_v2','1');}
 const TRADES=["কম্পিউটার টেকনোলজি","ইলেকট্রিক্যাল টেকনোলজি","সিভিল টেকনোলজি","মেকানিক্যাল টেকনোলজি","ইলেকট্রনিক্স টেকনোলজি","পাওয়ার টেকনোলজি","টেক্সটাইল টেকনোলজি","গার্মেন্টস টেকনোলজি","ফুড টেকনোলজি","অটোমোবাইল টেকনোলজি"];
 const SESS_DEF=["2025-26","2024-25","2023-24","2022-23","2026-27","2027-28","2028-29","2029-30"];
 const SEMS=["০১","০২","০৩","০৪","০৫","০৬","০৭","০৮"];
@@ -174,7 +188,12 @@ alert('✔️ সেমিস্টার সিলেক্ট হয়েছ�
 document.getElementById('semBox').style.display='none';
 updateSemBoxLabel();}
 
-function show(id){document.querySelectorAll('.card').forEach(c=>c.classList.remove('active'));document.getElementById('homePage').style.display=id=='homePage'?'block':'none';if(id!='homePage')document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+function show(id){document.querySelectorAll('.card').forEach(c=>c.classList.remove('active'));document.getElementById('homePage').style.display=id=='homePage'?'block':'none';if(id!='homePage')document.getElementById(id).classList.add('active');if(id=='instListPage')resetAdminSteps();window.scrollTo(0,0);}
+function resetAdminSteps(){
+document.getElementById('adminIdBox').style.display='block';
+document.getElementById('adminPwBox').style.display='none';
+document.getElementById('instTable').innerHTML='';
+adminId.value='';}
 function npLogoChg(i){let r=new FileReader();r.onload=e=>npLogo.src=e.target.result;r.readAsDataURL(i.files[0]);}
 function saveNewInst(){let bn=npBn.value.trim(),cd=npCd.value.trim(),pw=npPass.value;if(!bn||!cd||!pw)return alert('নাম, কোড ও পাসওয়ার্ড দিন!');if(insts.find(x=>x.code==cd))return alert('এই কোডে প্রতিষ্ঠান আছে!');insts.push({name:bn,en:npEn.value.trim(),eiin:npEi.value.trim(),code:cd,logo:npLogo.src,pass:pw});users[cd]=pw;localStorage.setItem('takrim_insts',JSON.stringify(insts));localStorage.setItem('takrim_users',JSON.stringify(users));npBn.value=npEn.value=npEi.value=npCd.value=npPass.value='';npLogo.src='https://via.placeholder.com/100';fillInst();alert('✔️ সেভ হয়েছে!');show('homePage');}
 function fillInst(){l_inst.innerHTML=insts.map((s,i)=>'<option value="'+i+'">'+s.name+'</option>').join('');}
@@ -183,12 +202,23 @@ function fillTSS(){renderTradeInputs();updateTradeBoxLabel();renderSessInputs();
 function saveTSS(){alert('✔️ সেভ হয়েছে!\n🔧 '+ (localStorage.getItem('takrim_trade')||TRADES[0]) +'\n🎓 সেশন: '+(localStorage.getItem('takrim_sess')||sessList[0]||'')+'\n📚 সেমিস্টার: '+(localStorage.getItem('takrim_sem')||SEMS[0]));show('homePage');}
 function teacherLogin(){let s=insts[+l_inst.value];let cd=l_code.value.trim(),pw=l_pass.value;let ok=(s&&s.code==cd&&s.pass==pw)||(users[cd]&&users[cd]==pw);if(!ok){l_msg.innerText='❌ ভুল কোড বা পাসওয়ার্ড!';return;}let cls=(localStorage.getItem('takrim_trade')||TRADES[0])+' | সেশন '+(localStorage.getItem('takrim_sess')||sessList[0]||'')+' | সেমিস্টার '+(localStorage.getItem('takrim_sem')||SEMS[0]);localStorage.setItem('collegeInfo',JSON.stringify({nameBn:s?s.name:'',nameEn:s?s.en:'',eiin:s?s.eiin:'',ins:s?s.code:'',logo:s?s.logo:''}));localStorage.setItem('takrim_current',cls);localStorage.setItem('takrim_current_class',cls);localStorage.setItem('takrim_session','1');location.href='dashboard.html';}
 
-/* ===== 🔐 আগে এডমিন আইডি, তারপর পাসওয়ার্ড ===== */
-function adminGate(){
-let ap=localStorage.getItem('takrim_admin_pass')||'admin123';
-if(adminId.value.trim()!=='takrim')return alert('❌ ভুল এডমিন আইডি!');
+/* ===== 🔐 দুই ধাপে এডমিন গেট ===== */
+function adminStep1(){
+let aid=localStorage.getItem('takrim_admin_id')||'malek';
+if(adminId.value.trim()!==aid)return alert('❌ ভুল এডমিন আইডি!');
+document.getElementById('adminIdBox').style.display='none';
+document.getElementById('adminPwBox').style.display='block';}
+function adminStep2(){
+let ap=localStorage.getItem('takrim_admin_pass')||'malek1980';
 if(adminPass.value!==ap)return alert('❌ ভুল পাসওয়ার্ড!');
-adminPass.value='';openListScr();}
+adminPass.value='';
+document.getElementById('adminPwBox').style.display='none';
+openListScr();}
+function resetAdminPw(){
+if(!confirm('এডমিন আইডি-পাসওয়ার্ড রিসেট করা হবে?\nআইডি: malek\nপাসওয়ার্ড: malek1980'))return;
+localStorage.setItem('takrim_admin_id','malek');
+localStorage.setItem('takrim_admin_pass','malek1980');
+alert('✔️ রিসেট হয়েছে!\nআইডি: malek\nপাসওয়ার্ড: malek1980');}
 function openListScr(){let h='<table style="width:100%;border-collapse:collapse;font-size:13px;margin-top:10px"><tr style="background:#0f3d2e;color:#fff"><th style="padding:8px;border:1px solid #ccc">নাম</th><th style="padding:8px;border:1px solid #ccc">কোড</th><th style="padding:8px;border:1px solid #ccc">পাসওয়ার্ড</th><th style="padding:8px;border:1px solid #ccc">🗑️</th></tr>';insts.forEach((s,i)=>{h+='<tr><td style="padding:8px;border:1px solid #ccc">'+s.name+'</td><td style="padding:8px;border:1px solid #ccc">'+s.code+'</td><td style="padding:8px;border:1px solid #ccc"><span>•••••• </span><button onclick="togglePw('+i+',this)" style="border:none;background:#eee;border-radius:6px;cursor:pointer">👁️</button></td><td style="padding:8px;border:1px solid #ccc;text-align:center"><button onclick="delInst('+i+')" style="border:none;background:#fee2e2;border-radius:6px;cursor:pointer">🗑️</button></td></tr>';});h+='</table>';instTable.innerHTML=h;}
 function togglePw(i,btn){let sp=btn.parentElement.querySelector('span');sp.textContent=sp.textContent.trim()=='••••••'?insts[i].pass+' ':'•••••• ';}
 function delInst(i){if(!confirm('ডিলিট করবেন?'))return;let cd=insts[i].code;insts.splice(i,1);delete users[cd];localStorage.setItem('takrim_insts',JSON.stringify(insts));localStorage.setItem('takrim_users',JSON.stringify(users));fillInst();openListScr();}
