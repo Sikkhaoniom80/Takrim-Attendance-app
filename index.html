@@ -49,7 +49,16 @@ label{font-weight:bold;font-size:14px}
 
 <div id="addInstPage" class="card">
 <h3 style="text-align:center">➕ প্রতিষ্ঠান যোগ করুন</h3>
-<div onclick="npLogoInput.click()" style="text-align:center;cursor:pointer"><img id="npLogo" src="https://via.placeholder.com/100" style="width:100px;height:100px;border-radius:50%;border:3px solid #ffcc00;object-fit:cover"><div style="font-size:12px;color:blue">লোগো বাছুন</div><input type="file" id="npLogoInput" accept="image/*" style="display:none" onchange="npLogoChg(this)"></div>
+<!-- 📷 ক্যামেরা + 🖼️ গ্যালারি লোগো -->
+<div style="text-align:center">
+<img id="npLogo" src="https://via.placeholder.com/100" style="width:100px;height:100px;border-radius:50%;border:3px solid #ffcc00;object-fit:cover">
+<div style="margin-top:8px">
+<button type="button" class="btn btn-y" style="width:auto;padding:10px 18px;margin:4px" onclick="document.getElementById('npLogoCamera').click()">📷 ক্যামেরা</button>
+<button type="button" class="btn btn-y" style="width:auto;padding:10px 18px;margin:4px" onclick="document.getElementById('npLogoGallery').click()">🖼️ গ্যালারি</button>
+</div>
+<input type="file" id="npLogoCamera" accept="image/*" capture="environment" style="display:none" onchange="npLogoChg(this)">
+<input type="file" id="npLogoGallery" accept="image/*" style="display:none" onchange="npLogoChg(this)">
+</div>
 <input id="npBn" placeholder="বাংলা নাম"><input id="npEn" placeholder="English Name"><input id="npEi" placeholder="EIIN"><input id="npCd" placeholder="প্রতিষ্ঠান কোড"><input id="npPass" type="password" placeholder="পাসওয়ার্ড সেট করুন">
 <button class="btn btn-y" onclick="saveNewInst()">✔️ সেভ করুন</button>
 <button class="btn btn-gray" onclick="show('homePage')">⬅️ হোম</button>
@@ -194,13 +203,21 @@ document.getElementById('adminIdBox').style.display='block';
 document.getElementById('adminPwBox').style.display='none';
 document.getElementById('instTable').innerHTML='';
 adminId.value='';}
-function npLogoChg(i){let r=new FileReader();r.onload=e=>npLogo.src=e.target.result;r.readAsDataURL(i.files[0]);}
+function npLogoChg(i){if(!i.files||!i.files[0])return;let r=new FileReader();r.onload=e=>npLogo.src=e.target.result;r.readAsDataURL(i.files[0]);}
 function saveNewInst(){let bn=npBn.value.trim(),cd=npCd.value.trim(),pw=npPass.value;if(!bn||!cd||!pw)return alert('নাম, কোড ও পাসওয়ার্ড দিন!');if(insts.find(x=>x.code==cd))return alert('এই কোডে প্রতিষ্ঠান আছে!');insts.push({name:bn,en:npEn.value.trim(),eiin:npEi.value.trim(),code:cd,logo:npLogo.src,pass:pw});users[cd]=pw;localStorage.setItem('takrim_insts',JSON.stringify(insts));localStorage.setItem('takrim_users',JSON.stringify(users));npBn.value=npEn.value=npEi.value=npCd.value=npPass.value='';npLogo.src='https://via.placeholder.com/100';fillInst();alert('✔️ সেভ হয়েছে!');show('homePage');}
 function fillInst(){l_inst.innerHTML=insts.map((s,i)=>'<option value="'+i+'">'+s.name+'</option>').join('');}
 function fillTSS(){renderTradeInputs();updateTradeBoxLabel();renderSessInputs();updateSessBoxLabel();renderSemInputs();updateSemBoxLabel();}
 /* ===== ৪. ✔️ সেভ ===== */
 function saveTSS(){alert('✔️ সেভ হয়েছে!\n🔧 '+ (localStorage.getItem('takrim_trade')||TRADES[0]) +'\n🎓 সেশন: '+(localStorage.getItem('takrim_sess')||sessList[0]||'')+'\n📚 সেমিস্টার: '+(localStorage.getItem('takrim_sem')||SEMS[0]));show('homePage');}
-function teacherLogin(){let s=insts[+l_inst.value];let cd=l_code.value.trim(),pw=l_pass.value;let ok=(s&&s.code==cd&&s.pass==pw)||(users[cd]&&users[cd]==pw);if(!ok){l_msg.innerText='❌ ভুল কোড বা পাসওয়ার্ড!';return;}let cls=(localStorage.getItem('takrim_trade')||TRADES[0])+' | সেশন '+(localStorage.getItem('takrim_sess')||sessList[0]||'')+' | সেমিস্টার '+(localStorage.getItem('takrim_sem')||SEMS[0]);localStorage.setItem('collegeInfo',JSON.stringify({nameBn:s?s.name:'',nameEn:s?s.en:'',eiin:s?s.eiin:'',ins:s?s.code:'',logo:s?s.logo:''}));localStorage.setItem('takrim_current',cls);localStorage.setItem('takrim_current_class',cls);localStorage.setItem('takrim_session','1');location.href='dashboard.html';}
+/* ===== 🔐 লগইন: সিলেক্ট করা প্রতিষ্ঠানের কোড ও পাসওয়ার্ডই মিলতে হবে ===== */
+function teacherLogin(){
+let s=insts[+l_inst.value];
+let cd=l_code.value.trim(),pw=l_pass.value;
+l_msg.innerText='';
+if(!s){l_msg.innerText='❌ কোনো প্রতিষ্ঠান পাওয়া যায়নি! আগে প্রতিষ্ঠান যোগ করুন।';return;}
+if(s.code!==cd){l_msg.innerText='❌ এই কোড "'+s.name+'" প্রতিষ্ঠানের নয়!';return;}
+if(s.pass!==pw){l_msg.innerText='❌ ভুল পাসওয়ার্ড!';return;}
+let cls=(localStorage.getItem('takrim_trade')||TRADES[0])+' | সেশন '+(localStorage.getItem('takrim_sess')||sessList[0]||'')+' | সেমিস্টার '+(localStorage.getItem('takrim_sem')||SEMS[0]);localStorage.setItem('collegeInfo',JSON.stringify({nameBn:s.name,nameEn:s.en,eiin:s.eiin,ins:s.code,logo:s.logo}));localStorage.setItem('takrim_current',cls);localStorage.setItem('takrim_current_class',cls);localStorage.setItem('takrim_session','1');location.href='dashboard.html';}
 
 /* ===== 🔐 দুই ধাপে এডমিন গেট ===== */
 function adminStep1(){
