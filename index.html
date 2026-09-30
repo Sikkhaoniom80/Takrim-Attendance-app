@@ -98,7 +98,6 @@ label{font-weight:bold;font-size:14px}
 <button class="btn btn-y" onclick="adminStep2()">OK ✔️</button>
 </div>
 
-<div style="text-align:center;margin-top:8px"><a href="#" onclick="resetAdminPw();return false;" style="font-size:13px;color:#666">🔄 পাসওয়ার্ড ভুলে গেছেন? রিসেট করুন</a></div>
 <div id="instTable"></div>
 <button class="btn btn-gray" onclick="show('homePage')">⬅️ হোম</button>
 </div>
@@ -225,11 +224,6 @@ if(adminPass.value!==ap)return alert('❌ ভুল পাসওয়ার্�
 adminPass.value='';
 document.getElementById('adminPwBox').style.display='none';
 openListScr();}
-function resetAdminPw(){
-if(!confirm('এডমিন আইডি-পাসওয়ার্ড রিসেট করা হবে?\nআইডি: malek\nপাসওয়ার্ড: malek1980'))return;
-localStorage.setItem('takrim_admin_id','malek');
-localStorage.setItem('takrim_admin_pass','malek1980');
-alert('✔️ রিসেট হয়েছে!\nআইডি: malek\nপাসওয়ার্ড: malek1980');}
 function openListScr(){let h='<table style="width:100%;border-collapse:collapse;font-size:13px;margin-top:10px"><tr style="background:#0f3d2e;color:#fff"><th style="padding:8px;border:1px solid #ccc">নাম</th><th style="padding:8px;border:1px solid #ccc">কোড</th><th style="padding:8px;border:1px solid #ccc">পাসওয়ার্ড</th><th style="padding:8px;border:1px solid #ccc">🗑️</th></tr>';insts.forEach((s,i)=>{h+='<tr><td style="padding:8px;border:1px solid #ccc">'+s.name+'</td><td style="padding:8px;border:1px solid #ccc">'+s.code+'</td><td style="padding:8px;border:1px solid #ccc"><span>•••••• </span><button onclick="togglePw('+i+',this)" style="border:none;background:#eee;border-radius:6px;cursor:pointer">👁️</button></td><td style="padding:8px;border:1px solid #ccc;text-align:center"><button onclick="delInst('+i+')" style="border:none;background:#fee2e2;border-radius:6px;cursor:pointer">🗑️</button></td></tr>';});h+='</table>';instTable.innerHTML=h;}
 function togglePw(i,btn){let sp=btn.parentElement.querySelector('span');sp.textContent=sp.textContent.trim()=='••••••'?insts[i].pass+' ':'•••••• ';}
 function delInst(i){if(!confirm('ডিলিট করবেন?'))return;let cd=insts[i].code;insts.splice(i,1);delete users[cd];localStorage.setItem('takrim_insts',JSON.stringify(insts));localStorage.setItem('takrim_users',JSON.stringify(users));fillInst();openListScr();}
