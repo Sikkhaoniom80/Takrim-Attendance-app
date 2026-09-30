@@ -30,6 +30,25 @@ table.mtbl th,table.mtbl td{border:1px solid #ccc;padding:4px 6px;text-align:cen
 <div class="header" style="padding-bottom:20px"><div class="college-pad"><img id="boxLogo3"><div style="flex:1;overflow:hidden"><div id="boxNameBn3" class="pad-bn"></div><div id="boxNameEn3" class="pad-en"></div><div style="font-size:10px;color:#333"><span id="boxEIIN3"></span> | <span id="boxIns3"></span></div></div></div>
 <h2 style="margin:10px 0 0">শিক্ষার্থীর তালিকা</h2><div style="color:#ffcc00;font-size:13px;margin-top:6px;font-weight:700">শ্রেণী: <span id="showClass3"></span></div>
 <button onclick="location.href='dashboard.html'" style="margin-top:10px;background:white;color:#0f3d2e;border:none;padding:6px 15px;border-radius:20px;font-weight:bold;cursor:pointer">⬅️ ড্যাশবোর্ড</button></div>
+<script>
+/* ===== প্যাড সবার আগে, আলাদাভাবে লোড ===== */
+(function(){
+try{
+var ci=null;var keys=['collegeInfo','clgInfo','college','takrim_collegeInfo','college_info','takrim_college'];
+for(var x=0;x<keys.length;x++){try{var v=JSON.parse(localStorage.getItem(keys[x])||'null');if(v&&(v.nameBn||v.name||v.eiin)) {ci=v;break;}}catch(e){}}
+if(!ci)ci={};
+var logo=ci.logo||ci.logoUrl||'';
+document.getElementById('boxNameBn3').innerText=ci.nameBn||ci.name||'প্রতিষ্ঠান';
+document.getElementById('boxNameEn3').innerText=ci.nameEn||ci.name_en||'';
+document.getElementById('boxEIIN3').innerText='EIIN: '+(ci.eiin||ci.EIIN||'-');
+document.getElementById('boxIns3').innerText='Code: '+(ci.ins||ci.code||'-');
+if(logo)document.getElementById('boxLogo3').src=logo;
+var cls=localStorage.getItem('takrim_current_class')||localStorage.getItem('takrim_current')||localStorage.getItem('currentClass')||localStorage.getItem('takrim_class')||localStorage.getItem('selectedClass')||'';
+document.getElementById('showClass3').innerText=cls;
+window._takrimCLS=cls;
+}catch(e){document.getElementById('boxNameBn3').innerText='প্রতিষ্ঠান';}
+})();
+</script>
 <div class="card">
 <button onclick="toggleAdd()" style="width:100%;padding:14px;background:#dcfce7;border:2px dashed #16a34a;border-radius:12px;font-weight:bold;cursor:pointer">➕ শিক্ষার্থী যোগ করুন</button>
 <div id="addForm" style="display:none;margin-top:10px;padding:12px;background:#f0fdf4;border-radius:12px;border:1px solid #16a34a"><input type="text" id="sName" placeholder="নাম"><input type="text" id="sRoll" placeholder="রোল"><input type="text" id="sMobile" placeholder="মোবাইল"><div style="display:flex;gap:8px"><button onclick="addStudent()" style="flex:1;padding:12px;background:#16a34a;color:white;border:none;border-radius:8px;font-weight:bold;cursor:pointer">✅ যোগ</button><button onclick="toggleAdd()" style="flex:1;padding:12px;background:#555;color:white;border:none;border-radius:8px;cursor:pointer">❌ বন্ধ</button></div></div>
@@ -53,6 +72,7 @@ table.mtbl th,table.mtbl td{border:1px solid #ccc;padding:4px 6px;text-align:cen
 <div id="studentList"></div><div id="resultDiv" style="overflow:auto;margin-top:10px;border:2px solid #7c3aed;border-radius:12px;padding:10px;background:#f5f3ff"></div>
 </div>
 <script>
+window.onerror=function(m){var d=document.getElementById('ocrStatus');if(d)d.innerHTML='⚠️ সমস্যা: '+m;};
 /* API Key ফোনে সেভ থাকবে, কোডে নয় */
 let GEMINI_API_KEY=localStorage.getItem('takrim_gemini_key')||'';
 function getGeminiKey(){
@@ -60,22 +80,21 @@ if(!GEMINI_API_KEY){
 let k=prompt('🔑 প্রথমবার: আপনার Gemini API Key দিন (একবারই লাগবে):');
 if(k&&k.trim()){GEMINI_API_KEY=k.trim();localStorage.setItem('takrim_gemini_key',GEMINI_API_KEY);}}
 return GEMINI_API_KEY;}
-let currentClass=localStorage.getItem('takrim_current_class')||localStorage.getItem('takrim_current')||'';
+let currentClass=window._takrimCLS||localStorage.getItem('takrim_current_class')||localStorage.getItem('takrim_current')||'';
 let students=[],attendance={},attMonthly={},results={};
 let subCount=13,subFull=[];
 let subNames=["বিষয় 1","বিষয় 2","বিষয় 3","বিষয় 4","বিষয় 5","বিষয় 6","বিষয় 7","বিষয় 8","বিষয় 9","বিষয় 10","বিষয় 11","বিষয় 12","বিষয় 13"];
 let currentFilter='none';
 function key(n){return n+'_'+currentClass;}
-function loadClassData(){students=JSON.parse(localStorage.getItem(key('students'))||'[]');attendance=JSON.parse(localStorage.getItem(key('att'))||'{}');attMonthly=JSON.parse(localStorage.getItem(key('attMonthly'))||'{}');results=JSON.parse(localStorage.getItem(key('results'))||'{}');subNames=JSON.parse(localStorage.getItem(key('subNames'))||'["বিষয় 1","বিষয় 2","বিষয় 3","বিষয় 4","বিষয় 5","বিষয় 6","বিষয় 7","বিষয় 8","বিষয় 9","বিষয় 10","বিষয় 11","বিষয় 12","বিষয় 13"]');subCount=parseInt(localStorage.getItem(key('subCount')))||13;if(subCount<1)subCount=13;while(subNames.length<subCount)subNames.push('বিষয় '+(subNames.length+1));let oldFull=parseInt(localStorage.getItem(key('fullMarks')))||100;try{subFull=JSON.parse(localStorage.getItem(key('subFull'))||'[]');}catch(e){subFull=[];}if(!subFull.length){for(let k=0;k<20;k++)subFull.push(oldFull);}while(subFull.length<20)subFull.push(100);}
+function loadClassData(){students=JSON.parse(localStorage.getItem(key('students'))||'[]');attendance=JSON.parse(localStorage.getItem(key('att'))||'{}');attMonthly=JSON.parse(localStorage.getItem(key('attMonthly'))||'{}');results=JSON.parse(localStorage.getItem(key('results'))||'{}');try{subNames=JSON.parse(localStorage.getItem(key('subNames'))||'null')||subNames;}catch(e){}subCount=parseInt(localStorage.getItem(key('subCount')))||13;if(subCount<1)subCount=13;while(subNames.length<subCount)subNames.push('বিষয় '+(subNames.length+1));let oldFull=parseInt(localStorage.getItem(key('fullMarks')))||100;try{subFull=JSON.parse(localStorage.getItem(key('subFull'))||'[]');}catch(e){subFull=[];}if(!subFull.length){for(let k=0;k<20;k++)subFull.push(oldFull);}while(subFull.length<20)subFull.push(100);}
 function saveAll(){if(!currentClass)return;localStorage.setItem(key('students'),JSON.stringify(students));localStorage.setItem(key('att'),JSON.stringify(attendance));localStorage.setItem(key('attMonthly'),JSON.stringify(attMonthly));localStorage.setItem(key('results'),JSON.stringify(results));localStorage.setItem(key('subFull'),JSON.stringify(subFull));localStorage.setItem(key('subCount'),subCount);localStorage.setItem(key('subNames'),JSON.stringify(subNames));}
 function setSubFull(si,v){subFull[si]=Math.max(1,parseInt(v)||100);saveAll();renderResult();}
 function setAllFull(v){let n=Math.max(1,parseInt(v)||100);for(let k=0;k<subCount;k++)subFull[k]=n;saveAll();renderResult();}
 function setSubCount(v){subCount=Math.max(1,Math.min(20,parseInt(v)||13));while(subNames.length<subCount)subNames.push('বিষয় '+(subNames.length+1));while(subFull.length<subCount)subFull.push(100);saveAll();renderResult();}
 function setSubName(si,v){subNames[si]=v.trim()||('বিষয় '+(si+1));saveAll();renderResult();}
 function getMonthInfo(){let d=new Date();let y=d.getFullYear(),m=d.getMonth();return{monthName:d.toLocaleString('bn-BD',{month:'long',year:'numeric'}),days:new Date(y,m+1,0).getDate(),key:y+'-'+m,today:d.getDate()};}
-function loadBox(){let info=JSON.parse(localStorage.getItem('collegeInfo')||'{}');boxNameBn3.innerText=info.nameBn||'প্রতিষ্ঠান';boxNameEn3.innerText=info.nameEn||'';boxEIIN3.innerText='EIIN: '+(info.eiin||'-');boxIns3.innerText='Code: '+(info.ins||'-');if(info.logo)boxLogo3.src=info.logo;showClass3.innerText=currentClass;}
 function toggleAdd(){let f=document.getElementById('addForm');f.style.display=f.style.display=='none'?'block':'none';}
-function addStudent(){if(!sName.value.trim())return alert('নাম দিন');students.push({name:sName.value.trim(),roll:sRoll.value.trim(),mobile:sMobile.value.trim()});saveAll();document.getElementById('addForm').style.display='none';sName.value='';sRoll.value='';sMobile.value='';filterList('all');}
+function addStudent(){if(!document.getElementById('sName').value.trim())return alert('নাম দিন');students.push({name:document.getElementById('sName').value.trim(),roll:document.getElementById('sRoll').value.trim(),mobile:document.getElementById('sMobile').value.trim()});saveAll();document.getElementById('addForm').style.display='none';document.getElementById('sName').value='';document.getElementById('sRoll').value='';document.getElementById('sMobile').value='';filterList('all');}
 function delStudent(i){if(!confirm('ডিলিট করবেন?'))return;students.splice(i,1);let na={};Object.keys(attendance).forEach(k=>{k=+k;if(k<i)na[k]=attendance[k];else if(k>i)na[k-1]=attendance[k];});attendance=na;let nm={};Object.keys(attMonthly).forEach(mk=>{let t={};Object.keys(attMonthly[mk]).forEach(k=>{k=+k;if(k<i)t[k]=attMonthly[mk][k];else if(k>i)t[k-1]=attMonthly[mk][k];});nm[mk]=t;});attMonthly=nm;let nr={};Object.keys(results).forEach(k=>{k=+k;if(k<i)nr[k]=results[k];else if(k>i)nr[k-1]=results[k];});results=nr;saveAll();render();updateCounts();}
 function editStudent(i){let s=students[i];let n=prompt('নাম ঠিক করুন:',s.name);if(n===null)return;let r=prompt('রোল ঠিক করুন:',s.roll||'');if(r===null)return;let m=prompt('মোবাইল ঠিক করুন:',s.mobile||'');if(m===null)return;students[i]={name:n.trim()||s.name,roll:r.trim(),mobile:m.trim()};saveAll();render();updateCounts();}
 function toggleAtt(i,isP){attendance[i]=isP?'present':'absent';let mi=getMonthInfo();if(!attMonthly[mi.key])attMonthly[mi.key]={};if(!attMonthly[mi.key][i])attMonthly[mi.key][i]={};attMonthly[mi.key][i][mi.today]=isP?'P':'A';saveAll();render();updateCounts();}
@@ -88,7 +107,7 @@ function activeSubs(){return subNames.slice(0,subCount);}
 function renderResult(){
 let subs=activeSubs();
 let h='<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap"><button class="pa" style="background:#7c3aed;color:#fff" onclick="editSubs()">✏️ বিষয়ের নাম বদলান</button><label style="font-size:13px;font-weight:bold">বিষয় সংখ্যা: <input type="number" value="'+subCount+'" min="1" max="20" style="width:60px;padding:6px;margin:0;text-align:center" onchange="setSubCount(this.value)"></label><label style="font-size:13px;font-weight:bold">সব বিষয়ে পূর্ণমান: <input id="allFullInp" type="number" value="100" min="1" max="200" style="width:60px;padding:6px;margin:0;text-align:center"></label><button class="pa" style="background:#0ea5e9;color:#fff" onclick="setAllFull(document.getElementById(\'allFullInp\').value)">সেট</button><button class="pa" style="background:#16a34a;color:#fff" onclick="downloadResultExcel()">📥 এক্সেল ডাউনলোড</button></div><div style="font-size:12px;color:#666;margin-bottom:6px">💡 বিষয়ের নামের ঘরে <b>সরাসরি লিখে</b> নাম বদলান। নিচের <b>হলুদ ঘরে</b> ওই বিষয়ের পূর্ণমান লিখুন (যেমন ৫০ বা ১০০)। ✅ মোট, %, গ্রেড, জিপিএ — শুধু নম্বর দেওয়া বিষয়গুলো দিয়েই হিসাব হবে।</div><div style="overflow:auto"><table class="mtbl"><tr><th>ক্রম</th><th>নাম</th><th>রোল</th>';
-subs.forEach((sn,si)=>{h+='<th><input value="'+sn.replace(/"/g,'&quot;')+'" style="width:64px;padding:4px;margin:0;text-align:center;font-size:11px;font-weight:bold;border:1px solid #c4b5fd;border-radius:6px;background:#fff" onchange="setSubName('+si+',this.value)" title="নাম বদলাতে লিখুন"></th>';});
+subs.forEach((sn,si)=>{h+='<th><input value="'+String(sn).replace(/"/g,'&quot;')+'" style="width:64px;padding:4px;margin:0;text-align:center;font-size:11px;font-weight:bold;border:1px solid #c4b5fd;border-radius:6px;background:#fff" onchange="setSubName('+si+',this.value)" title="নাম বদলাতে লিখুন"></th>';});
 h+='<th>প্রাপ্ত</th><th>%</th><th>গ্রেড</th><th>জিপিএ</th></tr>';
 h+='<tr><td></td><td></td><td style="font-size:10px;color:#666">পূর্ণমান↓</td>';
 subs.forEach((sn,si)=>{h+='<td><input type="number" value="'+(subFull[si]||100)+'" min="1" max="200" style="width:52px;padding:4px;margin:0;text-align:center;font-size:11px;background:#fef9c3" onchange="setSubFull('+si+',this.value)"></td>';});
@@ -113,7 +132,7 @@ let subs=activeSubs();
 let usedIdx=[];
 for(let si=0;si<subs.length;si++){let any=false;for(let i=0;i<students.length;i++){let raw=(results[i]||{})[si];if(raw!==undefined&&raw!==null&&raw!==''){any=true;break;}}if(any)usedIdx.push(si);}
 if(!usedIdx.length){alert('কোনো বিষয়ে নম্বর দেওয়া হয়নি');return;}
-let info=JSON.parse(localStorage.getItem('collegeInfo')||'{}');
+let info={};try{info=JSON.parse(localStorage.getItem('collegeInfo')||'{}');}catch(e){}
 let data=[[(info.nameBn||'')+' | শ্রেণী: '+currentClass],['ফলাফল']];
 let header=['ক্রম','নাম','রোল'];
 usedIdx.forEach(si=>{header.push(subs[si]);});
@@ -149,9 +168,9 @@ img.src=URL.createObjectURL(file);});}
 async function ocrStart(inp){
 let f=inp.files[0];if(!f)return;
 inp.value='';
-let gk=getGeminiKey();if(!gk){ocrStatus.innerHTML='❌ API Key ছাড়া চলবে না';return;}
-ocrStatus.innerHTML='🤖 AI পড়ছে... একটু অপেক্ষা করুন';
-ocrTableWrap.style.display='none';ocrRows.innerHTML='';
+let gk=getGeminiKey();if(!gk){document.getElementById('ocrStatus').innerHTML='❌ API Key ছাড়া চলবে না';return;}
+document.getElementById('ocrStatus').innerHTML='🤖 AI পড়ছে... একটু অপেক্ষা করুন';
+document.getElementById('ocrTableWrap').style.display='none';document.getElementById('ocrRows').innerHTML='';
 try{
 let b64=await fileToBase64(f);
 let body={contents:[{parts:[
@@ -164,15 +183,15 @@ let txt=j.candidates[0].content.parts[0].text.trim();
 txt=txt.replace(/```json|```/g,'').trim();
 let rows=JSON.parse(txt);
 if(!rows.length)throw new Error('empty');
-ocrStatus.innerHTML='✔️ '+rows.length+' জনের তথ্য পাওয়া গেছে';
-ocrRows.innerHTML=rows.map(rr=>'<tr>'
+document.getElementById('ocrStatus').innerHTML='✔️ '+rows.length+' জনের তথ্য পাওয়া গেছে';
+document.getElementById('ocrRows').innerHTML=rows.map(function(rr){return '<tr>'
 +'<td style="border:1px solid #ccc;padding:4px"><input value="'+String(rr.name||'').replace(/"/g,'&quot;')+'" style="width:100%;border:none;font-size:13px;padding:6px"></td>'
 +'<td style="border:1px solid #ccc;padding:4px"><input value="'+String(rr.roll||'')+'" style="width:100%;border:none;font-size:13px;padding:6px"></td>'
 +'<td style="border:1px solid #ccc;padding:4px"><input value="'+String(rr.mobile||'')+'" style="width:100%;border:none;font-size:13px;padding:6px"></td>'
-+'<td style="border:1px solid #ccc;text-align:center"><button onclick="this.closest(\'tr\').remove()" style="border:none;background:#fee2e2;border-radius:6px;padding:6px">❌</button></td></tr>').join('');
-ocrTableWrap.style.display='block';
++'<td style="border:1px solid #ccc;text-align:center"><button onclick="this.closest(\'tr\').remove()" style="border:none;background:#fee2e2;border-radius:6px;padding:6px">❌</button></td></tr>';}).join('');
+document.getElementById('ocrTableWrap').style.display='block';
 }catch(e){
-ocrStatus.innerHTML='❌ পড়া যায়নি: '+e.message+' — স্পষ্ট ছবি দিয়ে আবার চেষ্টা করুন';}}
+document.getElementById('ocrStatus').innerHTML='❌ পড়া যায়নি: '+e.message+' — স্পষ্ট ছবি দিয়ে আবার চেষ্টা করুন';}}
 function ocrSaveAll(){
 let added=0;
 document.querySelectorAll('#ocrRows tr').forEach(tr=>{
@@ -181,11 +200,12 @@ let name=inp[0].value.trim(),roll=inp[1].value.trim(),mob=inp[2].value.trim();
 if(!name&&!roll&&!mob)return;
 students.push({name:name,roll:roll,mobile:mob});added++;});
 saveAll();
-ocrTableWrap.style.display='none';ocrStatus.innerHTML='';
+document.getElementById('ocrTableWrap').style.display='none';document.getElementById('ocrStatus').innerHTML='';
 alert('✔️ '+added+' জন সেভ হয়েছে!');
 filterList('all');}
 /* ===== /AI ===== */
-loadClassData();loadBox();updateCounts();
+try{loadClassData();}catch(e){}
+updateCounts();
 document.getElementById('studentList').style.display='none';document.getElementById('studentList').classList.remove('show');document.getElementById('resultDiv').style.display='none';currentFilter='none';
 </script>
 </body>
