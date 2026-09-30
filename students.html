@@ -332,19 +332,22 @@ function ocrStart(inp){
   fileToBase64(f).then(function(b64){
     var ptxt='Extract student list as JSON array only. Items: name, roll, mobile. Bengali digits to English.';
     var body={contents:[{parts:[{text:ptxt},{inline_data:{mime_type:'image/jpeg',data:b64}}]}]};
-    var models=['gemini-3.8-flash','gemini-2.5-flash'];
-    function tryModel(i){
-      return fetch('https://generativelanguage.googleapis.com/v1beta/models/'+models[i]+':generateContent?key='+gk,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json();}).then(function(j){
+    var url='https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key='+gk;
+    function attempt(n){
+      return fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json();}).then(function(j){
         if(j.error){
           var em=String((j.error&&j.error.message)||'');
           var busy=(em.indexOf('high demand')>=0||em.indexOf('overloaded')>=0||em.indexOf('UNAVAILABLE')>=0);
-          if(busy&&i+1<models.length){return tryModel(i+1);}
+          if(busy&&n<3){
+            document.getElementById('ocrStatus').innerHTML='সার্ভার ব্যস্ত, আবার চেষ্টা করছি... ('+n+'/3)';
+            return new Promise(function(res){setTimeout(function(){res(attempt(n+1));},8000);});
+          }
           throw new Error(j.error.message||'API সমস্যা');
         }
         return j;
       });
     }
-    return tryModel(0);
+    return attempt(1);
   }).then(function(j){
     var txt=j.candidates[0].content.parts[0].text;
     var a=txt.indexOf('['),b=txt.lastIndexOf(']');
