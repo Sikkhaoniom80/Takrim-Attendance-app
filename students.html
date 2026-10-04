@@ -212,7 +212,7 @@ try{loadClassData();}catch(e){}
 updateCounts();
 </script>
 <script>
-function grade(p){if(p>=80)return 'A+';if(p>=70)return 'A';if(p>=60)return 'A-';if(p>=50)return 'B';if(p>=60)return 'A-';if(p>=50)return 'B';if(p>=40)return 'C';if(p>=33)return 'D';return 'F';}
+function grade(p){if(p>=80)return 'A+';if(p>=70)return 'A';if(p>=60)return 'A-';if(p>=50)return 'B';if(p>=40)return 'C';if(p>=33)return 'D';return 'F';}
 function gpaOf(p){if(p>=80)return 5;if(p>=70)return 4;if(p>=60)return 3.5;if(p>=50)return 3;if(p>=40)return 2;if(p>=33)return 1;return 0;}
 function activeSubs(){return subNames.slice(0,subCount);}
 function setSubFull(si,v){subFull[si]=Math.max(1,parseInt(v,10)||100);saveAll();renderResult();}
@@ -331,8 +331,8 @@ function ocrStart(inp){
   document.getElementById('ocrTableWrap').style.display='none';
   fileToBase64(f).then(function(b64){
     var ptxt='Extract student list as JSON array only. Items: name, roll, mobile. Bengali digits to English.';
-    var body={contents:[{parts:[{text:ptxt},{inline_data:{mime_type:'image/jpeg',data:b64}}]}]};
-    var url='https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+gk;
+    var body={contents:[{parts:[{text:ptxt},{inlineData:{mimeType:'image/jpeg',data:b64}}]}]};
+    var url='https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key='+gk;
     function attempt(n){
       return fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json();}).then(function(j){
         if(j.error){
