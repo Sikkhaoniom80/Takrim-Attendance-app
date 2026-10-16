@@ -119,30 +119,8 @@ function saveRes(){let data={sc:document.getElementById('sc').value,subs:[],mark
 function unlockRes(){let d=JSON.parse(localStorage.getItem('fullResultSheet')||'null');if(!d)return;document.getElementById('sc').value=d.sc;makeSheet();setTimeout(()=>{d.subs.forEach((sb,i)=>{document.getElementById(`subN${i+1}`).value=sb.name;document.getElementById(`subF${i+1}`).value=sb.full;});d.marks.forEach((row,i)=>{row.forEach((v,j)=>{document.getElementById(`m_${i}_${j+1}`).value=v;});});calcRes();},200);}
 function expExcel(){let tbl=document.getElementById('rt');let wb=XLSX.utils.table_to_book(tbl);XLSX.writeFile(wb,'Result_A4.xlsx');}
 function downPDF(){let pad=document.getElementById('institutePadFull'),area=document.getElementById('pdfArea');html2canvas(pad).then(c1=>{html2canvas(area).then(c2=>{let {jsPDF}=window.jspdf, pdf=new jsPDF('p','mm','a4');pdf.addImage(c1.toDataURL('image/png'),'PNG',10,10,190,30);pdf.addImage(c2.toDataURL('image/png'),'PNG',10,45,190,200);pdf.save('Result_A4_Pad.pdf');});});}
-function editTrade(){
-let h='<div id="boxE" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);z-index:99999;display:flex;justify-content:center;align-items:center;padding:10px"><div style="background:#fff;width:100%;max-width:420px;border-radius:16px;padding:14px;max-height:90vh;overflow:auto"><h3 style="text-align:center;margin:4px 0">🔧 ট্রেড (১০টা ফিক্সড)</h3><p style="font-size:11px;text-align:center;color:#666">ঘরে টাচ করে নাম বদলান - ১০টাই থাকবে</p>';
-for(let i=0;i<10;i++) h+=`<div style="display:flex;gap:6px;margin-bottom:6px"><span style="width:22px;padding:10px 0;font-weight:700">${i+1}.</span><input id="t_${i}" value="${(trades[i]||'').replace(/"/g,'&quot;')}" style="flex:1;padding:10px;border-radius:8px;border:1.5px solid #0d5bff;background:#eef4ff;font-weight:600"></div>`;
-h+=`<div style="display:flex;gap:8px;margin-top:12px"><button onclick="saveTradeEdit()" style="flex:1;background:#16a34a;color:#fff;padding:12px;border:none;border-radius:10px;font-weight:700">💾 সেভ</button><button onclick="document.getElementById(\'boxE\').remove()" style="flex:1;background:#666;color:#fff;padding:12px;border:none;border-radius:10px">বন্ধ</button></div></div></div>';
-document.body.insertAdjacentHTML('beforeend',h);
-}
-function saveTradeEdit(){
-for(let i=0;i<10;i++){ let v=document.getElementById(`t_${i}`).value.trim(); if(v) trades[i]=v; }
-if(trades.length>10) trades=trades.slice(0,10);
-while(trades.length<10) trades.push("ট্রেড "+(trades.length+1));
-localStorage.setItem('takrim_trades',JSON.stringify(trades)); loadLoginSelects(); document.getElementById('boxE').remove();
-}
-function editSession(){
-let h='<div id="boxE" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);z-index:99999;display:flex;justify-content:center;align-items:center;padding:10px"><div style="background:#fff;width:100%;max-width:420px;border-radius:16px;padding:14px"><h3 style="text-align:center;margin:4px 0">📅 সেশন (৪টা ফিক্সড)</h3><p style="font-size:11px;text-align:center;color:#666">ঘরে টাচ করে নাম বদলান - ৪টাই থাকবে, ডিফল্ট ২০২৫-২৬</p>';
-for(let i=0;i<4;i++) h+=`<div style="display:flex;gap:6px;margin-bottom:6px"><span style="width:22px;padding:10px 0;font-weight:700">${i+1}.</span><input id="s_${i}" value="${(sessions[i]||'').replace(/"/g,'&quot;')}" style="flex:1;padding:10px;border-radius:8px;border:1.5px solid #ff7a00;background:#fff8f0;font-weight:700;text-align:center"></div>`;
-h+=`<div style="display:flex;gap:8px;margin-top:12px"><button onclick="saveSessEdit()" style="flex:1;background:#ff7a00;color:#fff;padding:12px;border:none;border-radius:10px;font-weight:700">💾 সেভ</button><button onclick="document.getElementById(\'boxE\').remove()" style="flex:1;background:#666;color:#fff;padding:12px;border:none;border-radius:10px">বন্ধ</button></div></div></div>';
-document.body.insertAdjacentHTML('beforeend',h);
-}
-function saveSessEdit(){
-for(let i=0;i<4;i++){ let v=document.getElementById(`s_${i}`).value.trim(); if(v) sessions[i]=v; }
-if(sessions.length>4) sessions=sessions.slice(0,4);
-while(sessions.length<4) sessions.push("202"+(6+sessions.length)+"-"+(7+sessions.length));
-localStorage.setItem('takrim_sessions',JSON.stringify(sessions)); loadLoginSelects(); document.getElementById('boxE').remove();
-}
+function editTrade(){let inp=prompt('১০টা ট্রেড কমা দিয়ে:',trades.join(', '));if(!inp)return;trades=inp.split(',').map(s=>s.trim()).filter(s=>s).slice(0,10);localStorage.setItem('takrim_trades',JSON.stringify(trades));loadLoginSelects();}
+function editSession(){let inp=prompt('৪টা সেশন কমা দিয়ে:',sessions.join(', '));if(!inp)return;sessions=inp.split(',').map(s=>s.trim()).filter(s=>s).slice(0,4);localStorage.setItem('takrim_sessions',JSON.stringify(sessions));loadLoginSelects();}
 </script>
 </body>
 </html>
