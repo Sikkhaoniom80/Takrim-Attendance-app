@@ -23,20 +23,15 @@ input,select{width:100%;padding:12px;border-radius:12px;border:1px solid #ccc;ma
 #btnForm{ background:#0d8bf2 !important; border:3px solid #ffcc00; justify-content:center; color:#fff; }
 #btnLogin{ background:#7c3aed !important; border:3px solid #ffcc00; justify-content:center; color:#fff; }
 #btnList{ background:#dc2626 !important; border:3px solid #ffcc00; justify-content:center; color:#fff; }
-#btnForm span, #btnLogin span, #btnList span{
-  background:#000; color:#fff; padding:8px 22px; border-radius:30px; display:inline-block;
-}
-/* ✅ ৪ নম্বর কাউন্টার ঘরের ডিজাইন - নতুন */
+#btnForm span, #btnLogin span, #btnList span{ background:#000; color:#fff; padding:8px 22px; border-radius:30px; display:inline-block; }
 #btnCounter{ background:#0fa3b1 !important; border:3px solid #ffcc00; justify-content:center; gap:10px; padding:12px; cursor:default; }
 .counter-pill{flex:1;background:#000;color:#ffcc00;padding:10px 8px;border-radius:30px;display:inline-block;border:2px solid #ffcc00;text-align:center;font-size:15px}
 </style>
 </head>
 <body>
-
 <div id="firstPageWrap" style="width:100%;display:flex;flex-direction:column;align-items:center">
 <div class="main-banner"><img src="badge.jpg"></div>
 <div class="green-box"><span>টেক্সটাইল পলিটেকনিক হাজিরা</span></div>
-
 <button id="btnForm" class="menu" onclick="document.getElementById('formBox').classList.toggle('hidden')"><span>🏫 প্রতিষ্ঠান ফরম ▼</span></button>
 <div id="formBox" class="card hidden" style="text-align:center">
 <img id="logoPreview"><label for="logoInput" style="background:#ffcc00;padding:7px 18px;border-radius:20px;cursor:pointer;font-weight:700">🖼️ লোগো চেঞ্জ ৯৫x৯৫ গোল</label><input type="file" id="logoInput" accept="image/*" style="position:absolute;left:-9999px;opacity:0">
@@ -45,7 +40,6 @@ input,select{width:100%;padding:12px;border-radius:12px;border:1px solid #ccc;ma
 <div class="fifty"><input id="mobile" placeholder="মোবাইল"><input id="email" placeholder="Email"></div>
 <input id="pass1" type="password" placeholder="পাসওয়ার্ড"><button class="btn green" onclick="savePrimary()">সেভ করুন ✅</button>
 </div>
-
 <button id="btnLogin" class="menu" onclick="document.getElementById('loginBox').classList.toggle('hidden')"><span>🔐 লগইন ▼</span></button>
 <div id="loginBox" class="card hidden">
 <input id="instCodeLogin" placeholder="🏫 প্রতিষ্ঠান কোড / EIIN" oninput="findInstByCode()"><div id="foundInstName" style="text-align:center;font-weight:700;min-height:18px;color:green"></div>
@@ -53,21 +47,17 @@ input,select{width:100%;padding:12px;border-radius:12px;border:1px solid #ccc;ma
 <select id="branchSel"><option>ক শাখা</option><option>খ শাখা</option></select>
 <select id="semesterSel"></select>
 <select id="sessionSel"></select>
-<input id="loginPass" type="password" placeholder="🔑 পাসওয়ার্ড (কোডের নিচে)"><button class="btn blue" onclick="primaryLogin()">🔒 প্রবেশ করুন</button>
+<input id="loginPass" type="password" placeholder="🔑 পাসওয়ার্ড"><button class="btn blue" onclick="primaryLogin()">🔒 প্রবেশ করুন</button>
 <p id="loginMsg" style="color:red;text-align:center"></p>
 <div class="fifty"><button class="btn" style="background:#16a34a" onclick="editTrade()">🔧 ট্রেড এডিট (১০টা)</button><button class="btn" style="background:#ff7a00" onclick="editSession()">📅 সেশন এডিট (৪টা)</button></div>
 </div>
-
-<!-- ✅✅✅ ৪ নম্বর নতুন ঘর - মোট প্রতিষ্ঠান | মোট লগইন - ঠিক এখানে বসিয়েছি -->
 <button id="btnCounter" class="menu">
   <span class="counter-pill">মোট প্রতিষ্ঠান: <b id="totalInst">০</b></span>
   <span class="counter-pill">মোট লগইন: <b id="totalLoginCount">০</b></span>
 </button>
-
 <button id="btnList" class="menu" onclick="document.getElementById('listBox').classList.toggle('hidden')"><span>🔒 তালিকা ▼</span></button>
 <div id="listBox" class="card hidden"><button class="btn red" onclick="openListSecure()">🔓 তালিকা খুলুন (এডমিন)</button><div id="instList"></div></div>
 </div>
-
 <script>
 let trades=JSON.parse(localStorage.getItem('takrim_trades')||'null')||["টেক্সটাইল","গার্মেন্টস ডিজাইন","ইয়ার্ন ম্যানুফ্যাকচারিং","ফেব্রিক ম্যানুফ্যাকচারিং","ওয়েট প্রসেসিং","অ্যাপারেল ম্যানুফ্যাকচারিং","কম্পিউটার","ইলেকট্রিক্যাল","মেকানিক্যাল","সিভিল"];
 let sessions=JSON.parse(localStorage.getItem('takrim_sessions')||'null')||["2022-23","2023-24","2024-25","2025-26"];
@@ -76,21 +66,39 @@ let insts=JSON.parse(localStorage.getItem('takrim_primary_insts')||'[]');
 let tempLogo=localStorage.getItem('takrim_temp_logo')||'',currentInst=null;
 function loadLoginSelects(){document.getElementById('tradeSel').innerHTML=trades.map(t=>`<option>${t}</option>`).join('');document.getElementById('semesterSel').innerHTML=semesters.map(s=>`<option>${s}</option>`).join('');document.getElementById('sessionSel').innerHTML=sessions.map(s=>`<option>${s}</option>`).join('');}
 loadLoginSelects();
-
-// ✅ নতুন কাউন্টার আপডেট ফাংশন
 function toBn(n){ return n.toString().replace(/\d/g,d=>'০১২৩৪৫৬৭৮৯'[d]); }
+// ✅ ফিক্স ১: ইউনিক কাউন্ট - ৩ এর জায়গায় ১ দেখাবে
 function updateCounter(){
   let instsNow=JSON.parse(localStorage.getItem('takrim_primary_insts')||'[]');
   let logs=JSON.parse(localStorage.getItem('takrim_login_logs')||'[]');
+  let uniqueCodes=[...new Set(logs.map(l=>l.code))];
   document.getElementById('totalInst').innerText=toBn(instsNow.length);
-  document.getElementById('totalLoginCount').innerText=toBn(logs.length);
+  document.getElementById('totalLoginCount').innerText=toBn(uniqueCodes.length);
 }
 updateCounter();
-
 document.getElementById('logoInput').addEventListener('change',function(){if(!this.files[0])return;let r=new FileReader();r.onload=e=>{let img=new Image();img.onload=()=>{let c=document.createElement('canvas');c.width=600;c.height=600;let ctx=c.getContext('2d');let size=Math.min(img.width,img.height),sx=(img.width-size)/2,sy=(img.height-size)/2;ctx.fillStyle='#fff';ctx.fillRect(0,0,600,600);ctx.drawImage(img,sx,sy,size,size,0,0,600,600);tempLogo=c.toDataURL('image/png');let p=document.getElementById('logoPreview');p.src=tempLogo;p.style.display='block';localStorage.setItem('takrim_temp_logo',tempLogo);};img.src=e.target.result;};r.readAsDataURL(this.files[0]);});
 function savePrimary(){let bn=document.getElementById('bnName').value.trim(),pass=document.getElementById('pass1').value.trim();if(!bn)return alert('প্রতিষ্ঠানের নাম দিন');if(!pass)return alert('পাসওয়ার্ড দিন');let o={bnName:bn,enName:document.getElementById('enName').value.trim(),addr:document.getElementById('address').value.trim(),eiin:document.getElementById('eiin').value.trim(),schoolCode:document.getElementById('schoolCode').value.trim(),mobile:document.getElementById('mobile').value.trim(),email:document.getElementById('email').value.trim(),pass:pass,logo:tempLogo||''};insts.push(o);localStorage.setItem('takrim_primary_insts',JSON.stringify(insts));localStorage.setItem('takrim_temp_logo','');updateCounter();alert('✅ সেভ');location.reload();}
 function findInstByCode(){let code=document.getElementById('instCodeLogin').value.trim();currentInst=insts.find(x=>x.schoolCode==code||x.eiin==code);let el=document.getElementById('foundInstName');if(currentInst){el.innerText='✅ '+currentInst.bnName;el.style.color='green';}else{el.innerText=code?'❌ কোড পাওয়া যায়নি':'';el.style.color='red';}}
-function primaryLogin(){if(!currentInst)return document.getElementById('loginMsg').textContent='❌ কোড দিন';if(document.getElementById('loginPass').value!==currentInst.pass)return document.getElementById('loginMsg').textContent='❌ ভুল পাস';let logs=JSON.parse(localStorage.getItem('takrim_login_logs')||'[]');logs.push({code:currentInst.schoolCode,time:new Date().toISOString()});localStorage.setItem('takrim_login_logs',JSON.stringify(logs));localStorage.setItem('takrim_session',JSON.stringify({inst:currentInst,trade:document.getElementById('tradeSel').value,semester:document.getElementById('semesterSel').value,session:document.getElementById('sessionSel').value,branch:document.getElementById('branchSel').value}));window.location.href='dashboard.html';}
+// ✅ ফিক্স ২: ডুপ্লিকেট লগইন আটকানো + loginCode সেভ (logout ফিক্সের জন্য)
+function primaryLogin(){
+  if(!currentInst)return document.getElementById('loginMsg').textContent='❌ কোড দিন';
+  if(document.getElementById('loginPass').value!==currentInst.pass)return document.getElementById('loginMsg').textContent='❌ ভুল পাস';
+  let logs=JSON.parse(localStorage.getItem('takrim_login_logs')||'[]');
+  let code=currentInst.schoolCode||currentInst.eiin;
+  if(!logs.some(l=>l.code===code)){
+    logs.push({code:code,time:new Date().toISOString(),name:currentInst.bnName});
+    localStorage.setItem('takrim_login_logs',JSON.stringify(logs));
+  }
+  localStorage.setItem('takrim_session',JSON.stringify({
+    inst:currentInst,
+    trade:document.getElementById('tradeSel').value,
+    semester:document.getElementById('semesterSel').value,
+    session:document.getElementById('sessionSel').value,
+    branch:document.getElementById('branchSel').value,
+    loginCode:code
+  }));
+  window.location.href='dashboard.html?v=textile_final';
+}
 function openListSecure(){let a=prompt('এডমিন নাম'),p=prompt('পাসওয়ার্ড');if(a!=='malek'||p!=='takrim2022')return alert('ভুল এডমিন');document.getElementById('instList').innerHTML=insts.map((s,i)=>`<div style="display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #eee"><span>${s.bnName} (${s.schoolCode})</span><b style="color:red">${s.pass}</b></div>`).join('');}
 function editTrade(){let inp=prompt('১০টা ট্রেড কমা দিয়ে:',trades.join(', '));if(!inp)return;trades=inp.split(',').map(s=>s.trim()).filter(s=>s).slice(0,10);localStorage.setItem('takrim_trades',JSON.stringify(trades));loadLoginSelects();}
 function editSession(){let inp=prompt('৪টা সেশন কমা দিয়ে:',sessions.join(', '));if(!inp)return;sessions=inp.split(',').map(s=>s.trim()).filter(s=>s).slice(0,4);localStorage.setItem('takrim_sessions',JSON.stringify(sessions));loadLoginSelects();}
