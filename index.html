@@ -4,13 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>FINAL - Textile Polytechnic Hazira</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#082a1e">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" href="icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@500;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;font-family:'Hind Siliguri',sans-serif}
 body{margin:0;background:#082a1e;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:10px}
-.main-banner{width:380px;max-width:95%;border:4px solid #ffcc00;border-radius:22px;overflow:hidden;margin-top:10px;background:#000;line-height:0}
-.main-banner img{width:100%;display:block}
-.green-box{width:380px;max-width:95%;background:#16a34a;border-radius:16px;padding:12px;margin-top:20px;text-align:center;border:3px solid #ffcc00}
+.main-banner{width:380px;max-width:95%;border:none;border-radius:22px;margin-top:10px;background:transparent;line-height:0}
+.main-banner img{width:100%;height:auto;display:block;border-radius:22px;object-fit:contain}
+.green-box{width:380px;max-width:95%;background:#16a34a;border-radius:16px;padding:12px;margin-top:12px;text-align:center;border:3px solid #ffcc00}
 .green-box span{background:#000;color:#fff;display:inline-block;padding:8px 22px;border-radius:30px;font-weight:700;font-size:18px}
 .card{background:#fff;margin-top:12px;border-radius:24px;padding:16px;width:100%;max-width:430px}
 .menu{width:100%;max-width:430px;background:#fff;border:none;border-radius:16px;padding:16px;font-weight:700;color:#0d5bff;margin-top:12px;display:flex;justify-content:space-between;cursor:pointer}
@@ -30,8 +34,7 @@ input,select{width:100%;padding:12px;border-radius:12px;border:1px solid #ccc;ma
 </head>
 <body>
 <div id="firstPageWrap" style="width:100%;display:flex;flex-direction:column;align-items:center">
-<div class="main-banner"><img src="badge.jpg"></div>
-<div class="green-box"><span>টেক্সটাইল পলিটেকনিক হাজিরা</span></div>
+<div class="main-banner"><img src="icon-512.png"></div>
 <button id="btnForm" class="menu" onclick="document.getElementById('formBox').classList.toggle('hidden')"><span>🏫 প্রতিষ্ঠান ফরম ▼</span></button>
 <div id="formBox" class="card hidden" style="text-align:center">
 <img id="logoPreview"><label for="logoInput" style="background:#ffcc00;padding:7px 18px;border-radius:20px;cursor:pointer;font-weight:700">🖼️ লোগো চেঞ্জ ৯৫x৯৫ গোল</label><input type="file" id="logoInput" accept="image/*" style="position:absolute;left:-9999px;opacity:0">
@@ -85,46 +88,4 @@ function primaryLogin(){
   let code=currentInst.schoolCode||currentInst.eiin;
   if(!logs.some(l=>l.code===code)){
     logs.push({code:code,time:new Date().toISOString(),name:currentInst.bnName});
-    localStorage.setItem('takrim_login_logs',JSON.stringify(logs));
-  }
-  localStorage.setItem('takrim_session',JSON.stringify({
-    inst:currentInst,
-    trade:document.getElementById('tradeSel').value,
-    semester:document.getElementById('semesterSel').value,
-    session:document.getElementById('sessionSel').value,
-    branch:document.getElementById('branchSel').value,
-    loginCode:code
-  }));
-  window.location.href='dashboard.html?v=textile_final';
-}
-// ✅ BEST ডিজাইন - শুধু তালিকা ঘরের ভিতর
-function openListSecure(){
-  let a=prompt('এডমিন নাম'),p=prompt('পাসওয়ার্ড');
-  if(a!=='malek'||p!=='takrim2022')return alert('ভুল এডমিন');
-  let listDiv=document.getElementById('instList');
-  if(insts.length===0){
-    listDiv.innerHTML='<div style="text-align:center;padding:15px">কোনো প্রতিষ্ঠান নাই</div>';
-    return;
-  }
-  listDiv.innerHTML=insts.map((s,i)=>`
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border:1px solid #eee;background:#fff;border-radius:12px;margin:8px 0">
-      <div style="display:flex;align-items:center;gap:10px">
-        <img src="${s.logo||'badge.jpg'}" style="width:50px;height:50px;border-radius:50%;border:2px solid #ffcc00;object-fit:cover;background:#fff">
-        <div style="text-align:left;line-height:1.3">
-          <b style="font-size:14px">${s.bnName}</b><br>
-          <span style="font-size:12px">Code: ${s.eiin||s.schoolCode||''}</span><br>
-          <span style="font-size:12px;color:#d61f1f;font-weight:800">🔑 ${s.pass}</span>
-        </div>
-      </div>
-      <div style="display:flex;gap:6px">
-        <button onclick="navigator.clipboard.writeText('Code:${s.eiin||s.schoolCode} Pass:${s.pass}');alert('✅ কপি হয়েছে: ${s.bnName}')" style="background:#dbeafe;border:none;padding:10px 12px;border-radius:12px;cursor:pointer;font-size:16px">📋</button>
-        <button onclick="if(confirm('ডিলিট করবে? ${s.bnName}')){insts.splice(${i},1);localStorage.setItem('takrim_primary_insts',JSON.stringify(insts));let logs=JSON.parse(localStorage.getItem('takrim_login_logs')||'[]');let c='${s.eiin||s.schoolCode}';let c2='${s.schoolCode||s.eiin}';logs=logs.filter(x=>x.code!==c && x.code!==c2);localStorage.setItem('takrim_login_logs',JSON.stringify(logs));updateCounter();openListSecure();}" style="background:#fee2e2;border:none;padding:10px 12px;border-radius:12px;cursor:pointer;font-size:16px">🗑️</button>
-      </div>
-    </div>
-  `).join('');
-}
-function editTrade(){let inp=prompt('১০টা ট্রেড কমা দিয়ে:',trades.join(', '));if(!inp)return;trades=inp.split(',').map(s=>s.trim()).filter(s=>s).slice(0,10);localStorage.setItem('takrim_trades',JSON.stringify(trades));loadLoginSelects();}
-function editSession(){let inp=prompt('৪টা সেশন কমা দিয়ে:',sessions.join(', '));if(!inp)return;sessions=inp.split(',').map(s=>s.trim()).filter(s=>s).slice(0,4);localStorage.setItem('takrim_sessions',JSON.stringify(sessions));loadLoginSelects();}
-</script>
-</body>
-</html>
+    localStorage.setItem('takrim_login_logs
