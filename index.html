@@ -44,6 +44,7 @@ input,select{width:100%;padding:12px;border-radius:12px;border:1px solid #ccc;ma
 <div id="listBox" class="card hidden"><button class="btn red" onclick="openListSecure()">🔓 তালিকা খুলুন (এডমিন)</button><div id="instList"></div></div>
 </div>
 <script>
+const BLOCK_API = "https://script.google.com/macros/s/AKfycbz6uEYaP3pFx7WLVh8TPhywFblkwgjJZP8hW9Qq0HpsPbQosBN5gmSU4s4FgNttrflKMA/exec";
 function safeGet(k){try{let a=localStorage.getItem(k);if(a)return a;let b=sessionStorage.getItem(k);if(b)return b;let c=localStorage.getItem(k+'_backup');if(c)return c;}catch(e){}return null;}
 function safeSet(k,v){try{localStorage.setItem(k,v);}catch(e){}try{sessionStorage.setItem(k,v);}catch(e){}try{localStorage.setItem(k+'_backup',v);}catch(e){}}
 let trades,sessions,insts,logs;
@@ -61,9 +62,86 @@ function toBn(n){return n.toString().replace(/\d/g,d=>'০১২৩৪৫৬৭�
 function updateCounter(){document.getElementById('totalInst').innerText=toBn(insts.length);let unique=[...new Set(logs.map(l=>l.code))];document.getElementById('totalLoginCount').innerText=toBn(unique.length);}
 updateCounter();
 document.getElementById('logoInput').addEventListener('change',function(){if(!this.files[0])return;let r=new FileReader();r.onload=e=>{let img=new Image();img.onload=()=>{let c=document.createElement('canvas');c.width=600;c.height=600;let ctx=c.getContext('2d');let size=Math.min(img.width,img.height),sx=(img.width-size)/2,sy=(img.height-size)/2;ctx.fillStyle='#fff';ctx.fillRect(0,0,600,600);ctx.drawImage(img,sx,sy,size,size,0,0,600,600);tempLogo=c.toDataURL('image/png');let p=document.getElementById('logoPreview');p.src=tempLogo;p.style.display='block';safeSet('takrim_temp_logo',tempLogo);};img.src=e.target.result;};r.readAsDataURL(this.files[0]);});
-function savePrimary(){let bn=document.getElementById('bnName').value.trim();let pass=document.getElementById('pass1').value.trim();if(!bn)return alert('প্রতিষ্ঠানের নাম দিন');if(!pass)return alert('পাসওয়ার্ড দিন');let o={bnName:bn,enName:document.getElementById('enName').value.trim(),addr:document.getElementById('address').value.trim(),eiin:document.getElementById('eiin').value.trim(),schoolCode:document.getElementById('schoolCode').value.trim(),mobile:document.getElementById('mobile').value.trim(),email:document.getElementById('email').value.trim(),pass:pass,logo:tempLogo||''};insts.push(o);safeSet('takrim_primary_insts',JSON.stringify(insts));safeSet('takrim_temp_logo','');updateCounter();alert('✅ সেভ হয়েছে');location.reload();}
+
+async function savePrimary(){
+ let bn=document.getElementById('bnName').value.trim();
+ let pass=document.getElementById('pass1').value.trim();
+ if(!bn)return alert('প্রতিষ্ঠানের নাম দিন');
+ if(!pass)return alert('পাসওয়ার্ড দিন');
+ let o={
+  bnName:bn,
+  enName:document.getElementById('enName').value.trim(),
+  addr:document.getElementById('address').value.trim(),
+  eiin:document.getElementById('eiin').value.trim(),
+  schoolCode:document.getElementById('schoolCode').value.trim(),
+  mobile:document.getElementById('mobile').value.trim(),
+  email:document.getElementById('email').value.trim(),
+  pass:pass,
+  logo:tempLogo||''
+ };
+ insts.push(o);
+ safeSet('takrim_primary_insts',JSON.stringify(insts));
+ safeSet('takrim_temp_logo','');
+ updateCounter();
+
+ try{
+  await fetch(BLOCK_API, {
+   method:"POST",
+   mode:"no-cors",
+   body: JSON.stringify({
+    action:"register",
+    phone: o.mobile || o.eiin || o.schoolCode,
+    name: o.bnName,
+    code: o.schoolCode || o.eiin,
+    email: o.email,
+    institute: o.bnName
+   })
+  });
+ }catch(e){console.log(e)}
+
+ alert('✅ সেভ হয়েছে - Google Sheet এও জমা হলো!');
+ location.reload();
+}
+
 function findInstByCode(){let code=document.getElementById('instCodeLogin').value.trim();currentInst=insts.find(x=>x.schoolCode==code||x.eiin==code);let el=document.getElementById('foundInstName');if(currentInst){el.innerText='✅ '+currentInst.bnName;el.style.color='green';}else{el.innerText=code?'❌ কোড পাওয়া যায়নি':'';el.style.color='red';}}
-function primaryLogin(){if(!currentInst)return document.getElementById('loginMsg').textContent='❌ কোড দিন';if(document.getElementById('loginPass').value!==currentInst.pass)return document.getElementById('loginMsg').textContent='❌ ভুল পাস';let code=currentInst.schoolCode||currentInst.eiin;if(!logs.some(l=>l.code===code)){logs.push({code:code,time:new Date().toISOString(),name:currentInst.bnName});safeSet('takrim_login_logs',JSON.stringify(logs));}updateCounter();alert('✅ লগইন সফল: '+currentInst.bnName);}
+
+async function primaryLogin(){
+ if(!currentInst)return document.getElementById('loginMsg').textContent='❌ কোড দিন';
+ if(document.getElementById('loginPass').value!==currentInst.pass)return document.getElementById('loginMsg').textContent='❌ ভুল পাস';
+
+ let code=currentInst.schoolCode||currentInst.eiin;
+ let phoneToCheck = currentInst.mobile || code;
+
+ document.getElementById('loginMsg').textContent='⏳ চেক হচ্ছে...';
+ try{
+  let res = await fetch(BLOCK_API, {
+   method:"POST",
+   body: JSON.stringify({action:"check", phone: phoneToCheck})
+  });
+  let data = await res.json();
+  if(data.result=="blocked"){
+   document.getElementById('loginMsg').textContent='🚫 আপনি BLOCKED! Admin এর সাথে যোগাযোগ করুন';
+   return;
+  }
+ }catch(e){console.log("Block check skip",e)}
+
+ if(!logs.some(l=>l.code===code)){logs.push({code:code,time:new Date().toISOString(),name:currentInst.bnName});safeSet('takrim_login_logs',JSON.stringify(logs));}
+ updateCounter();
+
+ let sessObj = {
+  inst: currentInst,
+  trade: document.getElementById('tradeSel').value,
+  branch: document.getElementById('branchSel').value,
+  semester: document.getElementById('semesterSel').value,
+  session: document.getElementById('sessionSel').value,
+  loginCode: phoneToCheck
+ };
+ safeSet('takrim_session', JSON.stringify(sessObj));
+ 
+ alert('✅ লগইন সফল: '+currentInst.bnName);
+ window.location.href='dashboard.html';
+}
+
 function exportBackup(){let data={insts:safeGet('takrim_primary_insts')||'[]',logs:safeGet('takrim_login_logs')||'[]'};let blob=new Blob([JSON.stringify(data)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Hazira_Backup_'+new Date().toISOString().slice(0,10)+'.json';a.click();}
 function importBackup(e){let file=e.target.files[0];if(!file)return;let r=new FileReader();r.onload=function(ev){try{let d=JSON.parse(ev.target.result);if(d.insts)safeSet('takrim_primary_insts',d.insts);if(d.logs)safeSet('takrim_login_logs',d.logs);alert('✅ Restore হয়ে গেছে!');location.reload();}catch(err){alert('❌ ফাইল ভুল');}};r.readAsText(file);}
 function openListSecure(){let p=prompt('Admin পাসওয়ার্ড');if(p!=='admin123')return alert('ভুল');document.getElementById('instList').innerHTML=insts.map((x,i)=>`<div style="border:1px solid #ccc;padding:8px;margin:5px;border-radius:10px"><b>${x.bnName}</b><br>EIIN:${x.eiin} Code:${x.schoolCode}<br>Mobile:${x.mobile}<br><button onclick="delInst(${i})" style="background:red;color:white;border:none;padding:5px 10px;border-radius:8px">Delete</button></div>`).join('');}
