@@ -4,6 +4,26 @@
 <div style="text-align:center;margin-top:8px"><button onclick="logout()" style="background:#d61f1f;color:#fff;border:none;padding:6px 14px;border-radius:8px;font-size:12px">🚪 লগআউট</button> <button onclick="window.location.href='index.html'" style="background:#0d47a1;color:#fff;border:none;padding:6px 14px;border-radius:8px;font-size:12px">🏠 হোম</button></div>
 <div id="acc" style="width:100%;max-width:430px;margin-top:10px"></div></div>
 <script>
+// 🚨 BLOCK SYSTEM - শিক্ষা অনিয়ম
+const BLOCK_API = "https://script.google.com/macros/s/AKfycbz6uEYaP3pFx7WLVh8TPhywFblkwgjJZP8hW9Qq0HpsPbQosBN5gmSU4s4FgNttrflKMA/exec";
+async function checkBlock(){
+  try{
+    let sess = JSON.parse(localStorage.getItem('takrim_session')||'null');
+    if(!sess) return;
+    let phone = sess.loginCode || sess.inst?.mobile || sess.inst?.eiin || "";
+    if(!phone) return;
+    let res = await fetch(BLOCK_API, {method: "POST", body: JSON.stringify({action: "check", phone: phone})});
+    let data = await res.json();
+    if(data.result == "blocked"){
+      alert("🚫 আপনাকে BLOCK করা হয়েছে! Admin: শিক্ষা অনিয়ম");
+      localStorage.removeItem('takrim_session');
+      window.location.href = "index.html";
+    }
+  }catch(e){console.log(e)}
+}
+checkBlock();
+setInterval(checkBlock, 10000);
+
 // ✅ FIX: প্রত্যেক সেমিস্টার আলাদা
 let sessFix = JSON.parse(localStorage.getItem('takrim_session')||'null');
 let baseKey = "default";
