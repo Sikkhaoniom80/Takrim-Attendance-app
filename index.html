@@ -62,7 +62,6 @@ function toBn(n){return n.toString().replace(/\d/g,d=>'০১২৩৪৫৬৭�
 function updateCounter(){document.getElementById('totalInst').innerText=toBn(insts.length);let unique=[...new Set(logs.map(l=>l.code))];document.getElementById('totalLoginCount').innerText=toBn(unique.length);}
 updateCounter();
 document.getElementById('logoInput').addEventListener('change',function(){if(!this.files[0])return;let r=new FileReader();r.onload=e=>{let img=new Image();img.onload=()=>{let c=document.createElement('canvas');c.width=600;c.height=600;let ctx=c.getContext('2d');let size=Math.min(img.width,img.height),sx=(img.width-size)/2,sy=(img.height-size)/2;ctx.fillStyle='#fff';ctx.fillRect(0,0,600,600);ctx.drawImage(img,sx,sy,size,size,0,0,600,600);tempLogo=c.toDataURL('image/png');let p=document.getElementById('logoPreview');p.src=tempLogo;p.style.display='block';safeSet('takrim_temp_logo',tempLogo);};img.src=e.target.result;};r.readAsDataURL(this.files[0]);});
-
 async function savePrimary(){
  let bn=document.getElementById('bnName').value.trim();
  let pass=document.getElementById('pass1').value.trim();
@@ -98,9 +97,7 @@ async function savePrimary(){
  alert('✅ সেভ হয়েছে - Google Sheet এও জমা হলো!');
  location.reload();
 }
-
 function findInstByCode(){let code=document.getElementById('instCodeLogin').value.trim();currentInst=insts.find(x=>x.schoolCode==code||x.eiin==code);let el=document.getElementById('foundInstName');if(currentInst){el.innerText='✅ '+currentInst.bnName;el.style.color='green';}else{el.innerText=code?'❌ কোড পাওয়া যায়নি':'';el.style.color='red';}}
-
 async function primaryLogin(){
  if(!currentInst)return document.getElementById('loginMsg').textContent='❌ কোড দিন';
  if(document.getElementById('loginPass').value!==currentInst.pass)return document.getElementById('loginMsg').textContent='❌ ভুল পাস';
@@ -132,7 +129,6 @@ async function primaryLogin(){
  alert('✅ লগইন সফল: '+currentInst.bnName);
  window.location.href='dashboard.html';
 }
-
 function exportBackup(){let data={insts:safeGet('takrim_primary_insts')||'[]',logs:safeGet('takrim_login_logs')||'[]'};let blob=new Blob([JSON.stringify(data)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Hazira_Backup_'+new Date().toISOString().slice(0,10)+'.json';a.click();}
 function importBackup(e){let file=e.target.files[0];if(!file)return;let r=new FileReader();r.onload=function(ev){try{let d=JSON.parse(ev.target.result);if(d.insts)safeSet('takrim_primary_insts',d.insts);if(d.logs)safeSet('takrim_login_logs',d.logs);alert('✅ Restore হয়ে গেছে!');location.reload();}catch(err){alert('❌ ফাইল ভুল');}};r.readAsText(file);}
 function openListSecure(){let p=prompt('Admin পাসওয়ার্ড');if(p!=='admin123')return alert('ভুল');document.getElementById('instList').innerHTML=insts.map((x,i)=>`<div style="border:1px solid #ccc;padding:8px;margin:5px;border-radius:10px"><b>${x.bnName}</b><br>EIIN:${x.eiin} Code:${x.schoolCode}<br>Mobile:${x.mobile}<br><button onclick="delInst(${i})" style="background:red;color:white;border:none;padding:5px 10px;border-radius:8px">Delete</button></div>`).join('');}
