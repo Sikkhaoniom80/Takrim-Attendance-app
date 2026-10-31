@@ -45,7 +45,7 @@ input,select{width:100%;padding:12px;border-radius:12px;border:1px solid #ccc;ma
 </div>
 <script>
 const BLOCK_API = "https://script.google.com/macros/s/AKfycbzKCrNMMmPHZpEzgCU_xeD_I21oOdmphxSljX-hafeRkWftij8sz-dHKW0mSm5x_z_A/exec";
-const MEMBER_API = "https://script.google.com/macros/s/AKfycby8YzZ8BP3gahIHrpcya-9iD1PRN7BnGtxmCP42hsnoYlnBKTxDCKH-tKlpqenPpe7PiA/exec";
+const MEMBER_API = "https://script.google.com/macros/s/AKfycbwbdEKRu1v8uAkPXRfv7GY5f7cirhFKQscfkJrAn-DfH8qEtDkzblIJ5Z9olK9iqxNO/exec";
 function safeGet(k){try{let a=localStorage.getItem(k);if(a)return a;let b=sessionStorage.getItem(k);if(b)return b;let c=localStorage.getItem(k+'_backup');if(c)return c;}catch(e){}return null;}
 function safeSet(k,v){try{localStorage.setItem(k,v);}catch(e){}try{sessionStorage.setItem(k,v);}catch(e){}try{localStorage.setItem(k+'_backup',v);}catch(e){}}
 let trades,sessions,insts,logs;
@@ -114,10 +114,26 @@ function primaryLogin(){
  let found=insts.find(i=>i.schoolCode===code||i.eiin===code);
  if(!found){document.getElementById('loginMsg').innerText="ভুল প্রতিষ্ঠান কোড বা EIIN!";return;}
  if(found.pass!==pass){document.getElementById('loginMsg').innerText="ভুল পাসওয়ার্ড!";return;}
- let logItem={code:code,trade:document.getElementById('tradeSel').value,branch:document.getElementById('branchSel').value,semester:document.getElementById('semesterSel').value,session:document.getElementById('sessionSel').value,time:new Date().toISOString()};
+ let trade=document.getElementById('tradeSel').value;
+ let branch=document.getElementById('branchSel').value;
+ let semester=document.getElementById('semesterSel').value;
+ let sessionYear=document.getElementById('sessionSel').value;
+ let logItem={code:code,trade:trade,branch:branch,semester:semester,session:sessionYear,time:new Date().toISOString()};
  logs.push(logItem);
  safeSet('takrim_login_logs',JSON.stringify(logs));
  safeSet('takrim_current_login',JSON.stringify(logItem));
+ let sessionObj={
+   loginCode: code,
+   trade: trade,
+   branch: branch,
+   semester: semester,
+   session: sessionYear,
+   cls: trade,
+   section: branch,
+   shift: semester,
+   inst: found
+ };
+ safeSet('takrim_session', JSON.stringify(sessionObj));
  updateCounter();
  alert("🔑 লগইন সফল হয়েছে!");
  window.location.href="dashboard.html";
