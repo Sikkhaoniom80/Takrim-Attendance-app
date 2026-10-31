@@ -22,6 +22,7 @@ input,select{width:100%;padding:12px;border-radius:12px;border:1px solid #ccc;ma
 #logoPreview{width:95px;height:95px;border-radius:50%;border:3px solid #ffcc00;object-fit:cover;background:#fff;display:none;margin:0 auto}
 #btnForm{background:#0d8bf2!important;color:#fff}#btnLogin{background:#7c3aed!important;color:#fff}#btnList{background:#dc2626!important;color:#fff}
 #btnForm span,#btnLogin span,#btnList span{background:#000;color:#fff;padding:8px 22px;border-radius:30px;display:inline-block}
+#btnForm{background:#0d8bf2!important;color:#fff}#btnLogin{background:#7c3aed!important;color:#fff}#btnList{background:#dc2626!important;color:#fff}
 #btnCounter{background:#0fa3b1!important;gap:10px;cursor:default}
 .counter-pill{flex:1;background:#000;color:#ffcc00;padding:10px 8px;border-radius:30px;border:2px solid #ffcc00;text-align:center;font-size:15px}
 </style>
@@ -45,7 +46,7 @@ input,select{width:100%;padding:12px;border-radius:12px;border:1px solid #ccc;ma
 </div>
 <script>
 const BLOCK_API = "https://script.google.com/macros/s/AKfycbzKCrNMMmPHZpEzgCU_xeD_I21oOdmphxSljX-hafeRkWftij8sz-dHKW0mSm5x_z_A/exec";
-const MEMBER_API = "https://script.google.com/macros/s/AKfycbwbdEKRu1v8uAkPXRfv7GY5f7cirhFKQscfkJrAn-DfH8qEtDkzblIJ5Z9olK9iqxNO/exec";
+const MEMBER_API = "https://script.google.com/macros/s/AKfycbz36IdEsXnbuXA4-LfM8S8omjuuAN8yK3HxCGnEfejH3Y_zua6uYvrQ39fH5g7CcaSy/exec";
 function safeGet(k){try{let a=localStorage.getItem(k);if(a)return a;let b=sessionStorage.getItem(k);if(b)return b;let c=localStorage.getItem(k+'_backup');if(c)return c;}catch(e){}return null;}
 function safeSet(k,v){try{localStorage.setItem(k,v);}catch(e){}try{sessionStorage.setItem(k,v);}catch(e){}try{localStorage.setItem(k+'_backup',v);}catch(e){}}
 let trades,sessions,insts,logs;
@@ -85,20 +86,26 @@ async function savePrimary(){
  updateCounter();
  try{ fetch(BLOCK_API, {method:"POST", mode:"no-cors", body: JSON.stringify({action:"register", mobile:o.mobile, pass:o.pass, code:o.schoolCode, eiin:o.eiin})}); }catch(e){}
  try{
-  fetch(MEMBER_API, {
+  let res = await fetch(MEMBER_API, {
     method:"POST", 
-    mode:"no-cors", 
     body: JSON.stringify({
       institute: o.bnName,
       code: o.schoolCode,
       einn: o.eiin,
       password: o.pass,
       mobile: o.mobile,
-      status: "Pending"
+      status: "Active"
     })
   });
- }catch(e){}
- alert('✅ সেভ হয়েছে - Member Sheet এও জমা হলো মামা!');
+  let data = await res.json();
+  if(data.result == "ok"){
+    alert('✅ সেভ হয়েছে - Google Sheet Members এ জমা হলো মামা!');
+  } else {
+    alert('⚠️ লোকাল সেভ হয়েছে, শিটে Error: ' + data.message);
+  }
+ }catch(e){
+  alert('✅ লোকাল সেভ হয়েছে, শিটে যাচ্ছে - ২ মিনিট পর শিট চেক করো মামা!');
+ }
  location.reload();
 }
 function findInstByCode(){
