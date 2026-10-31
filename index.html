@@ -39,16 +39,18 @@ input,select{width:100%;padding:12px;border-radius:12px;border:1px solid #ccc;ma
 <input id="instCodeLogin" placeholder="🏫 প্রতিষ্ঠান কোড / EIIN" oninput="findInstByCode()"><div id="foundInstName" style="text-align:center;font-weight:700;min-height:18px;color:green"></div><select id="tradeSel"></select><select id="branchSel"><option>ক শাখা</option><option>খ শাখা</option></select><select id="semesterSel"></select><select id="sessionSel"></select><input id="loginPass" type="password" placeholder="🔑 পাসওয়ার্ড"><button class="btn blue" onclick="primaryLogin()">🔒 প্রবেশ করুন</button><p id="loginMsg" style="color:red;text-align:center"></p>
 </div>
 <button id="btnCounter" class="menu"><span class="counter-pill">মোট প্রতিষ্ঠান: <b id="totalInst">০</b></span><span class="counter-pill">মোট লগইন: <b id="totalLoginCount">০</b></span></button>
+<div class="card" style="text-align:center"><b style="font-size:14px">🛡️ সেফটি ব্যাকআপ</b><div class="fifty" style="margin-top:8px"><button class="btn" style="background:#000;color:#ffcc00" onclick="exportBackup()">📤 Backup ডাউনলোড</button><button class="btn" style="background:#ffcc00;color:#000" onclick="document.getElementById('importFile').click()">📥 Restore</button><input type="file" id="importFile" accept=".json" style="display:none" onchange="importBackup(event)"></div><p style="font-size:11px;color:gray;margin:6px 0 0 0">History Delete এর আগে Backup ডাউনলোড করে রাখুন</p></div>
+<button id="btnList" class="menu" onclick="document.getElementById('listBox').classList.toggle('hidden')"><span>🔒 তালিকা ▼</span></button>
+<div id="listBox" class="card hidden"><button class="btn red" onclick="openListSecure()">🔓 তালিকা খুলুন (এডমিন)</button><div id="instList"></div></div>
 </div>
 <script>
 const BLOCK_API = "https://script.google.com/macros/s/AKfycbzKCrNMMmPHZpEzgCU_xeD_I21oOdmphxSljX-hafeRkWftij8sz-dHKW0mSm5x_z_A/exec";
-const MEMBER_API = "https://script.google.com/macros/s/AKfycbx8G8_sXXtCi3lBXPbf-8pHyu-Cdr2UtcGKExqw3hziD3zE8tuSe_mndCFMVNQrhOBjkA/exec";
-
+const MEMBER_API = "https://script.google.com/macros/s/AKfycby8YzZ8BP3gahIHrpcya-9iD1PRN7BnGtxmCP42hsnoYlnBKTxDCKH-tKlpqenPpe7PiA/exec";
 function safeGet(k){try{let a=localStorage.getItem(k);if(a)return a;let b=sessionStorage.getItem(k);if(b)return b;let c=localStorage.getItem(k+'_backup');if(c)return c;}catch(e){}return null;}
 function safeSet(k,v){try{localStorage.setItem(k,v);}catch(e){}try{sessionStorage.setItem(k,v);}catch(e){}try{localStorage.setItem(k+'_backup',v);}catch(e){}}
 let trades,sessions,insts,logs;
 try{trades=JSON.parse(safeGet('takrim_trades')||'null');}catch(e){trades=null;}
-if(!trades)trades=["টেক্সটাইল","গার্মেন্টস ডিজাইন","ইয়ার্ন ম্যানুফ্যাকচারিং","ফেব্রিক ম্যানুফ্যাকচারিং","ওয়েট প্রসেসিং","অ্যাপারেল ম্যানুফ্যাকচারিং","কম্পিউটার","ইলেকট্রিক্যাল","মেকানিক্যাল","সিভিল"];
+if(!trades)trades=["টেক্সটাইল","গার্মেন্টস ডিজাইন","ইয়ার্ন ম্যানুফ্যাকচারিং","ফেব্রিক ম্যানুফ্যাকচারিং","ওয়েট প্রসেসিং","অ্যাপারেল ম্যানুফ্যাকচারিং","কম্পিউটার","ইলেকক্ট্রিক্যাল","মেকানিক্যাল","সিভিল"];
 try{sessions=JSON.parse(safeGet('takrim_sessions')||'null');}catch(e){sessions=null;}
 if(!sessions)sessions=["2022-23","2023-24","2024-25","2025-26"];
 let semesters=["১ম সেমিস্টার","২য় সেমিস্টার","৩য় সেমিস্টার","৪র্থ সেমিস্টার","৫ম সেমিস্টার","৬ষ্ঠ সেমিস্টার","৭ম সেমিস্টার","৮ম সেমিস্টার"];
@@ -61,7 +63,6 @@ function toBn(n){return n.toString().replace(/\d/g,d=>'০১২৩৪৫৬৭�
 function updateCounter(){document.getElementById('totalInst').innerText=toBn(insts.length);let unique=[...new Set(logs.map(l=>l.code))];document.getElementById('totalLoginCount').innerText=toBn(unique.length);}
 updateCounter();
 document.getElementById('logoInput').addEventListener('change',function(){if(!this.files[0])return;let r=new FileReader();r.onload=e=>{let img=new Image();img.onload=()=>{let c=document.createElement('canvas');c.width=600;c.height=600;let ctx=c.getContext('2d');let size=Math.min(img.width,img.height),sx=(img.width-size)/2,sy=(img.height-size)/2;ctx.fillStyle='#fff';ctx.fillRect(0,0,600,600);ctx.drawImage(img,sx,sy,size,size,0,0,600,600);tempLogo=c.toDataURL('image/png');let p=document.getElementById('logoPreview');p.src=tempLogo;p.style.display='block';safeSet('takrim_temp_logo',tempLogo);};img.src=e.target.result;};r.readAsDataURL(this.files[0]);});
-
 async function savePrimary(){
  let bn=document.getElementById('bnName').value.trim();
  let pass=document.getElementById('pass1').value.trim();
@@ -82,38 +83,85 @@ async function savePrimary(){
  safeSet('takrim_primary_insts',JSON.stringify(insts));
  safeSet('takrim_temp_logo','');
  updateCounter();
- 
- // BLOCK API তে পাঠাবে
  try{ fetch(BLOCK_API, {method:"POST", mode:"no-cors", body: JSON.stringify({action:"register", mobile:o.mobile, pass:o.pass, code:o.schoolCode, eiin:o.eiin})}); }catch(e){}
- 
- // MEMBER API তে পাঠাবে - তোমার Takrim member Sheet
  try{
-  await fetch(MEMBER_API, {method:"POST", mode:"no-cors", body: JSON.stringify({Mobile:o.mobile, Password:o.pass, Institute:o.bnName, EIIN:o.eiin || o.schoolCode})});
+  fetch(MEMBER_API, {
+    method:"POST", 
+    mode:"no-cors", 
+    body: JSON.stringify({
+      institute: o.bnName,
+      code: o.schoolCode,
+      einn: o.eiin,
+      password: o.pass,
+      mobile: o.mobile,
+      status: "Pending"
+    })
+  });
  }catch(e){}
-
- alert('✅ সেভ হয়েছে - Member Sheet এও জমা হলো!');
+ alert('✅ সেভ হয়েছে - Member Sheet এও জমা হলো মামা!');
  location.reload();
 }
-
-function findInstByCode(){let code=document.getElementById('instCodeLogin').value.trim();currentInst=insts.find(x=>x.schoolCode==code||x.eiin==code);let el=document.getElementById('foundInstName');if(currentInst){el.innerText='✅ '+currentInst.bnName;el.style.color='green';}else{el.innerText=code?'❌ কোড পাওয়া যায়নি':'';el.style.color='red';}}
-
-async function primaryLogin(){
- if(!currentInst)return document.getElementById('loginMsg').textContent='❌ কোড দিন';
- if(document.getElementById('loginPass').value!==currentInst.pass)return document.getElementById('loginMsg').textContent='❌ ভুল পাস';
- let code=currentInst.schoolCode||currentInst.eiin;
- let phoneToCheck = currentInst.mobile || code;
- document.getElementById('loginMsg').textContent='⏳ চেক হচ্ছে...';
- try{
-  let res = await fetch(BLOCK_API, {method:"POST", body: JSON.stringify({action:"check", phone: phoneToCheck, code: code})});
-  let data = await res.json();
-  if(data.result=="blocked"){document.getElementById('loginMsg').textContent='🚫 BLOCKED!'; return;}
- }catch(e){}
- if(!logs.some(l=>l.code===code)){logs.push({code:code,time:new Date().toISOString(),name:currentInst.bnName});safeSet('takrim_login_logs',JSON.stringify(logs));}
+function findInstByCode(){
+ let code=document.getElementById('instCodeLogin').value.trim();
+ let found=insts.find(i=>i.schoolCode===code||i.eiin===code);
+ let div=document.getElementById('foundInstName');
+ if(found){div.innerText=found.bnName;div.style.color="green";}
+ else{div.innerText=code ? "প্রতিষ্ঠান পাওয়া যায়নি" : "";div.style.color="red";}
+}
+function primaryLogin(){
+ let code=document.getElementById('instCodeLogin').value.trim();
+ let pass=document.getElementById('loginPass').value.trim();
+ let found=insts.find(i=>i.schoolCode===code||i.eiin===code);
+ if(!found){document.getElementById('loginMsg').innerText="ভুল প্রতিষ্ঠান কোড বা EIIN!";return;}
+ if(found.pass!==pass){document.getElementById('loginMsg').innerText="ভুল পাসওয়ার্ড!";return;}
+ let logItem={code:code,trade:document.getElementById('tradeSel').value,branch:document.getElementById('branchSel').value,semester:document.getElementById('semesterSel').value,session:document.getElementById('sessionSel').value,time:new Date().toISOString()};
+ logs.push(logItem);
+ safeSet('takrim_login_logs',JSON.stringify(logs));
+ safeSet('takrim_current_login',JSON.stringify(logItem));
  updateCounter();
- let sessObj = {inst: currentInst, trade: document.getElementById('tradeSel').value, branch: document.getElementById('branchSel').value, semester: document.getElementById('semesterSel').value, session: document.getElementById('sessionSel').value, loginCode: phoneToCheck};
- safeSet('takrim_session', JSON.stringify(sessObj));
- alert('✅ লগইন সফল: '+currentInst.bnName);
- window.location.href='dashboard.html';
+ alert("🔑 লগইন সফল হয়েছে!");
+ window.location.href="dashboard.html";
+}
+function exportBackup(){
+ let data={insts:insts,logs:logs};
+ let blob=new Blob([JSON.stringify(data)],{type:"application/json"});
+ let a=document.createElement('a');
+ a.href=URL.createObjectURL(blob);
+ a.download="hazira_backup_"+new Date().toISOString().slice(0,10)+".json";
+ a.click();
+}
+function importBackup(e){
+ let file=e.target.files[0];
+ if(!file)return;
+ let r=new FileReader();
+ r.onload=ev=>{
+  try{
+   let data=JSON.parse(ev.target.result);
+   if(data.insts)insts=data.insts;
+   if(data.logs)logs=data.logs;
+   safeSet('takrim_primary_insts',JSON.stringify(insts));
+   safeSet('takrim_login_logs',JSON.stringify(logs));
+   updateCounter();
+   alert("📥 ব্যাকআপ সফলভাবে রিস্টোর হয়েছে!");
+   location.reload();
+  }catch(err){alert("ভুল ফাইল ফরম্যাট!");}
+ };
+ r.readAsText(file);
+}
+function openListSecure(){
+ let p=prompt("এডমিন পাসওয়ার্ড দিন:");
+ if(p==="admin123"){
+  let listDiv=document.getElementById('instList');
+  listDiv.innerHTML=insts.map((i,idx)=>`<p>${idx+1}. ${i.bnName} (${i.mobile}) - <button onclick="deleteInst(${idx})">মুছুন</button></p>`).join('');
+ }else{alert("ভুল পাসওয়ার্ড!");}
+}
+function deleteInst(idx){
+ if(confirm("নিশ্চিত মুছতে চান?")){
+  insts.splice(idx,1);
+  safeSet('takrim_primary_insts',JSON.stringify(insts));
+  updateCounter();
+  location.reload();
+ }
 }
 </script>
 </body>
