@@ -44,7 +44,7 @@ input,select{width:100%;padding:12px;border-radius:12px;border:1px solid #ccc;ma
 <div id="listBox" class="card hidden"><button class="btn red" onclick="openListSecure()">🔓 তালিকা খুলুন (এডমিন)</button><div id="instList"></div></div>
 </div>
 <script>
-const BLOCK_API = "https://script.google.com/macros/s/AKfycbz6uEYaP3pFx7WLVh8TPhywFblkwgjJZP8hW9Qq0HpsPbQosBN5gmSU4s4FgNttrflKMA/exec";
+const BLOCK_API = "https://script.google.com/macros/s/AKfycbzKCrNMMmPHZpEzgCU_xeD_I21oOdmphxSljX-hafeRkWftij8sz-dHKW0mSm5x_z_A/exec";
 function safeGet(k){try{let a=localStorage.getItem(k);if(a)return a;let b=sessionStorage.getItem(k);if(b)return b;let c=localStorage.getItem(k+'_backup');if(c)return c;}catch(e){}return null;}
 function safeSet(k,v){try{localStorage.setItem(k,v);}catch(e){}try{sessionStorage.setItem(k,v);}catch(e){}try{localStorage.setItem(k+'_backup',v);}catch(e){}}
 let trades,sessions,insts,logs;
@@ -83,22 +83,18 @@ async function savePrimary(){
  safeSet('takrim_primary_insts',JSON.stringify(insts));
  safeSet('takrim_temp_logo','');
  updateCounter();
-
  try{
   await fetch(BLOCK_API, {
    method:"POST",
-   mode:"no-cors",
    body: JSON.stringify({
     action:"register",
-    phone: o.mobile || o.eiin || o.schoolCode,
-    name: o.bnName,
-    code: o.schoolCode || o.eiin,
-    email: o.email,
-    institute: o.bnName
+    mobile: o.mobile,
+    pass: o.pass,
+    code: o.schoolCode,
+    eiin: o.eiin
    })
-  });
+  }).then(r=>r.json());
  }catch(e){console.log(e)}
-
  alert('✅ সেভ হয়েছে - Google Sheet এও জমা হলো!');
  location.reload();
 }
@@ -108,15 +104,13 @@ function findInstByCode(){let code=document.getElementById('instCodeLogin').valu
 async function primaryLogin(){
  if(!currentInst)return document.getElementById('loginMsg').textContent='❌ কোড দিন';
  if(document.getElementById('loginPass').value!==currentInst.pass)return document.getElementById('loginMsg').textContent='❌ ভুল পাস';
-
  let code=currentInst.schoolCode||currentInst.eiin;
  let phoneToCheck = currentInst.mobile || code;
-
  document.getElementById('loginMsg').textContent='⏳ চেক হচ্ছে...';
  try{
   let res = await fetch(BLOCK_API, {
    method:"POST",
-   body: JSON.stringify({action:"check", phone: phoneToCheck})
+   body: JSON.stringify({action:"check", phone: phoneToCheck, code: code})
   });
   let data = await res.json();
   if(data.result=="blocked"){
@@ -124,10 +118,8 @@ async function primaryLogin(){
    return;
   }
  }catch(e){console.log("Block check skip",e)}
-
  if(!logs.some(l=>l.code===code)){logs.push({code:code,time:new Date().toISOString(),name:currentInst.bnName});safeSet('takrim_login_logs',JSON.stringify(logs));}
  updateCounter();
-
  let sessObj = {
   inst: currentInst,
   trade: document.getElementById('tradeSel').value,
@@ -137,7 +129,6 @@ async function primaryLogin(){
   loginCode: phoneToCheck
  };
  safeSet('takrim_session', JSON.stringify(sessObj));
- 
  alert('✅ লগইন সফল: '+currentInst.bnName);
  window.location.href='dashboard.html';
 }
